@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.Lumen" parent="android:Theme.Material.Light.NoActionBar" />
+    <!--
+      Pure-Compose app: this theme only has to get the window right before the first frame
+      composes. Colours, typography and shapes all live in LumenTheme (Compose).
+
+      Theme.DeviceDefault.DayNight (API 29+) is inherited rather than a *.NoActionBar
+      variant because the platform ships no DayNight NoActionBar style; switching the
+      action bar off here keeps a single definition and still follows the system's
+      light/dark setting, so the pre-composition window does not flash white in dark mode.
+    -->
+    <style name="Theme.Lumen" parent="android:Theme.DeviceDefault.DayNight">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">?android:attr/colorBackground</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+    </style>
+
+    <!--
+      The summoned panel. Translucent so whatever the user was looking at stays visible
+      behind it, which is the whole point of the surface.
+
+      windowBackground is fully transparent and the scrim is drawn in Compose instead, so
+      the scrim can double as the tap-to-dismiss target. windowDisablePreview stops the
+      system drawing a solid placeholder window before the first frame composes — without
+      it the panel flashes an opaque rectangle on every summon.
+    -->
+    <style name="Theme.Lumen.Transparent" parent="Theme.Lumen">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
 </resources>

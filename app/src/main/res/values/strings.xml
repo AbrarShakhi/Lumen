@@ -1,3 +1,187 @@
 <resources>
     <string name="app_name">Lumen</string>
+
+    <!-- Search surface -->
+    <string name="search_hint">Search apps, contacts, files…</string>
+    <string name="search_clear">Clear query</string>
+    <string name="search_empty_title">No results</string>
+    <string name="search_empty_subtitle">Nothing matched “%1$s”</string>
+    <string name="search_idle_title">Search anything</string>
+    <string name="search_idle_subtitle">Apps, contacts, files, settings and the web</string>
+
+    <!-- Result sections -->
+    <string name="section_answer">Answer</string>
+    <string name="section_app">Apps</string>
+    <string name="section_shortcut">Shortcuts</string>
+    <string name="section_contact">Contacts</string>
+    <string name="section_note">Notes</string>
+    <string name="section_file">Files</string>
+    <string name="section_calendar">Calendar</string>
+    <string name="section_setting">Settings</string>
+    <string name="section_web">Web</string>
+    <string name="section_system">Lumen</string>
+    <string name="section_show_more">Show more</string>
+
+    <!-- Permissions -->
+    <string name="permission_title">Search your %1$s</string>
+    <string name="permission_body">Tap to allow Lumen access</string>
+    <string name="permission_dismiss">Not now</string>
+
+    <!-- Result actions -->
+    <string name="action_open">Open</string>
+    <string name="action_app_info">App info</string>
+    <string name="action_uninstall">Uninstall</string>
+    <string name="action_copy">Copy</string>
+    <string name="action_share">Share</string>
+    <string name="action_more">More actions</string>
+    <string name="action_call">Call</string>
+    <string name="action_message">Message</string>
+    <string name="action_open_contact">Open contact</string>
+    <string name="action_search_web">Search the web</string>
+    <string name="action_open_link">Open link</string>
+    <string name="copied">Copied</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_open">Settings</string>
+    <string name="settings_back">Back</string>
+
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_system">Follow system</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_dynamic_color">Material You colours</string>
+    <string name="settings_dynamic_color_summary">Take the palette from your wallpaper</string>
+    <string name="settings_font_size">Text size</string>
+    <string name="settings_font_size_value">%1$d%%</string>
+
+    <string name="settings_layout">Layout</string>
+    <string name="settings_bar_position">Search bar</string>
+    <string name="settings_bar_position_top">Top</string>
+    <string name="settings_bar_position_bottom">Bottom</string>
+
+    <string name="settings_search_sources">Search</string>
+    <string name="settings_search_sources_summary">Choose what Lumen searches</string>
+
+    <!--
+      Provider names. Distinct from the section headings above: a heading labels a *kind of
+      result* ("Answer"), while these name the *source* that produced it, and several
+      sources can share one heading.
+    -->
+    <string name="provider_apps">Apps</string>
+    <string name="provider_contacts">Contacts</string>
+    <string name="provider_web">Web search</string>
+    <string name="provider_math">Calculator</string>
+    <string name="provider_units">Unit converter</string>
+    <string name="provider_time">World clock &amp; dates</string>
+    <string name="provider_settings">Device settings</string>
+    <string name="provider_lumen">Lumen settings</string>
+    <string name="provider_notes">Notes</string>
+    <string name="provider_currency">Currency</string>
+    <string name="provider_ai">AI answers</string>
+    <string name="provider_files">Files</string>
+    <string name="provider_calendar">Calendar</string>
+
+    <!-- Launch surfaces -->
+    <string name="widget_hint">Search</string>
+    <string name="widget_description">A search bar that opens Lumen</string>
+    <string name="tile_label">Lumen search</string>
+
+    <!-- Launcher mode -->
+    <string name="launcher_title">Launcher mode</string>
+    <string name="launcher_explainer">Lumen can replace your home screen, so pressing Home opens search. This also unlocks app shortcuts, which Android only shares with the default launcher.</string>
+    <string name="launcher_offer">Offer Lumen as a home app</string>
+    <string name="launcher_offer_summary">Makes Lumen selectable in your system settings</string>
+    <string name="launcher_choose">Choose home app</string>
+    <string name="launcher_change">Change home app</string>
+    <string name="launcher_is_home">Lumen is currently your home app</string>
+    <string name="launcher_not_home">Lumen is not your home app</string>
+    <string name="launcher_revert_hint">To undo this, choose your previous launcher under Settings \u2192 Default apps \u2192 Home app.</string>
+    <string name="launcher_shortcuts_on">App shortcuts are available</string>
+    <string name="settings_launcher">Launcher mode</string>
+    <string name="calendar_join">Join call</string>
+    <string name="calendar_call">Call</string>
+
+    <!-- Document folders (SAF) -->
+    <string name="files_folders_title">Document folders</string>
+    <string name="files_folders_explainer">Android lets apps search your photos and videos, but not your documents. Grant Lumen a folder and it can search the files inside it too.</string>
+    <string name="files_add_folder">Add a folder</string>
+    <string name="files_remove_folder">Remove folder</string>
+    <string name="files_indexed_count">%1$d documents indexed</string>
+    <string name="settings_files">Files</string>
+
+    <!-- AI -->
+    <string name="ai_needs_key">Add an API key to ask AI</string>
+    <string name="ai_invalid_key">That API key was rejected</string>
+    <string name="ai_access_denied">This key\'s Google project is denied access</string>
+    <string name="ai_rate_limited">Rate limited \u2014 try again shortly</string>
+    <string name="ai_offline">No connection</string>
+    <string name="ai_failed">Couldn\'t get an answer</string>
+    <string name="ai_add_key">Add key</string>
+    <string name="ai_title">AI answers</string>
+    <string name="ai_key_label">API key</string>
+    <string name="ai_key_hint">Paste your key</string>
+    <string name="ai_key_saved">Key saved</string>
+    <string name="ai_key_configured">A key is configured</string>
+    <string name="ai_key_none">No key yet</string>
+    <string name="ai_key_remove">Remove key</string>
+    <string name="ai_get_key">Where to get a key</string>
+    <string name="ai_usage_hint">Type \u201Cai &lt;question&gt;\u201D in search to ask.</string>
+
+    <!-- System settings entries. Titles mirror what Android calls each screen. -->
+    <string name="setting_wifi">Wi-Fi</string>
+    <string name="setting_bluetooth">Bluetooth</string>
+    <string name="setting_mobile_data">Mobile network</string>
+    <string name="setting_airplane">Airplane mode</string>
+    <string name="setting_hotspot">Hotspot &amp; tethering</string>
+    <string name="setting_vpn">VPN</string>
+    <string name="setting_nfc">NFC</string>
+    <string name="setting_cast">Cast</string>
+    <string name="setting_display">Display</string>
+    <string name="setting_sound">Sound &amp; vibration</string>
+    <string name="setting_notifications">Notifications</string>
+    <string name="setting_apps">Apps</string>
+    <string name="setting_storage">Storage</string>
+    <string name="setting_battery">Battery</string>
+    <string name="setting_location">Location</string>
+    <string name="setting_security">Security</string>
+    <string name="setting_privacy">Privacy</string>
+    <string name="setting_accounts">Accounts &amp; sync</string>
+    <string name="setting_language">Languages &amp; input</string>
+    <string name="setting_keyboard">Keyboard</string>
+    <string name="setting_date_time">Date &amp; time</string>
+    <string name="setting_accessibility">Accessibility</string>
+    <string name="setting_default_apps">Default apps</string>
+    <string name="setting_home_app">Default home app</string>
+    <string name="setting_assistant">Digital assistant</string>
+    <string name="setting_developer">Developer options</string>
+    <string name="setting_about">About phone</string>
+
+    <!-- Lumen's own settings, searchable like any other result. -->
+    <string name="lumen_setting_theme">Lumen theme</string>
+    <string name="lumen_setting_sources">Lumen search sources</string>
+    <string name="lumen_setting_all">Lumen settings</string>
+    <string name="lumen_setting_hint">Open in Lumen</string>
+
+    <!-- Notes -->
+    <string name="notes_title">Notes</string>
+    <string name="notes_new">New note</string>
+    <string name="notes_empty">No notes yet</string>
+    <string name="notes_empty_hint">Anything you jot here becomes searchable</string>
+    <string name="notes_title_hint">Title</string>
+    <string name="notes_body_hint">Write something\u2026</string>
+    <string name="notes_delete">Delete note</string>
+    <string name="notes_untitled">Untitled</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_save">Save</string>
+
+    <!-- Providers -->
+    <string name="providers_title">Search sources</string>
+    <string name="providers_permission_needed">Permission needed</string>
+    <string name="providers_permission_granted">Ready</string>
+    <string name="providers_permission_blocked">Blocked in system settings</string>
+    <string name="providers_empty">No search sources are installed</string>
+
 </resources>
