@@ -1,8 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- For currency rates and AI answers. No network is used for local search. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!--
+      Required to *read* connectivity state. Without it ConnectivityManager throws, the
+      throw is swallowed, and PlatformCapability.Network reports false forever — which would
+      silently disable every network-gated provider rather than failing visibly.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+      Optional. Contact search is off until this is granted, and Lumen degrades to its other
+      sources rather than nagging. CALL_PHONE is deliberately NOT requested: contact results
+      open the dialer pre-filled (ACTION_DIAL) instead of placing calls directly, so a
+      mistap is recoverable and no additional grant is needed.
+    -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+
+    <!--
+      Storage split at API 33. Both sets are declared because the app targets 37 but runs on
+      31: AppPermission resolves which ones actually apply at runtime, so the device asks
+      only for what it can grant.
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+    <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+
+    <!--
+      Package visibility (Android 11+).
+
+      QUERY_ALL_PACKAGES is deliberately NOT declared: Google Play restricts it to a narrow
+      allowlist and rejects generic launcher justifications. The MAIN/LAUNCHER intent entry
+      below makes every *launchable* app visible, which is exactly the set an app launcher
+      needs, and requires no Play declaration. The remaining entries let Lumen probe which
+      handlers exist for contact actions without being able to enumerate everything.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="https" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+
+        <!--
+          Named explicitly so Lumen can tell whether they are installed before offering a
+          contact action for them. Package visibility hides anything not declared here, so
+          this list is also the complete set of messaging apps Lumen can detect.
+        -->
+        <package android:name="com.whatsapp" />
+        <package android:name="org.telegram.messenger" />
+        <package android:name="org.thoughtcrime.securesms" />
+    </queries>
 
     <application
+        android:name=".app.LumenApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -11,18 +78,108 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Lumen">
+
         <activity
-            android:name=".MainActivity"
+            android:name=".app.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.Lumen"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <!-- Summon Lumen with the assistant gesture, once selected in system settings. -->
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+
+            <!-- Accept a query handed over by another app. -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <action android:name="android.intent.action.WEB_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
+
+        <!--
+          The summon-from-anywhere panel. Deliberately a translucent activity rather than a
+          SYSTEM_ALERT_WINDOW overlay: same appearance, no special permission, and it is not
+          subject to OEM overlay/background-start restrictions.
+
+          excludeFromRecents keeps a transient panel out of the recents list, and singleTask
+          means re-summoning reuses the existing instance instead of stacking copies.
+        -->
+        <activity
+            android:name=".surface.overlay.QuickSearchActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Lumen.Transparent"
+            android:launchMode="singleTask"
+            android:excludeFromRecents="true"
+            android:taskAffinity=".surface.overlay"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="com.abrarshakhi.lumen.action.QUICK_SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          Launcher mode, opt-in.
+
+          An activity-alias rather than extra categories on MainActivity, and disabled by
+          default: Lumen does not even appear in the system's home-app picker until the user
+          asks for it in settings. Being the home app is a serious commitment on ColorOS, so
+          it should never be something someone stumbles into.
+
+          stateNotNeeded on MainActivity is required for a home activity — the system may
+          kill and restart it without saved state.
+        -->
+        <activity-alias
+            android:name=".surface.launcher.HomeAlias"
+            android:targetActivity=".app.MainActivity"
+            android:enabled="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <!--
+          Quick Settings tile. On API 31 the user must drag it into the panel by hand —
+          requestAddTileService only exists from 33.
+        -->
+        <service
+            android:name=".surface.tile.LumenTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_widget_search"
+            android:label="@string/tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Home-screen widget, rendered by Glance in the launcher's process. -->
+        <receiver
+            android:name=".surface.widget.LumenSearchWidgetReceiver"
+            android:exported="true"
+            android:label="@string/tile_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/lumen_search_widget_info" />
+        </receiver>
+
     </application>
 
 </manifest>
