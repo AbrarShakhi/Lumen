@@ -151,7 +151,7 @@ class ArchitectureTest {
     }
 
     private fun sourceFiles(): List<Pair<String, File>> {
-        val root = File("src/main/java/com/abrarshakhi/lumen")
+        val root = File("src/main/kotlin/com/abrarshakhi/lumen")
         check(root.isDirectory) { "Source root not found at ${root.absolutePath}" }
         return root.walkTopDown()
             .filter { it.isFile && it.extension == "kt" }
