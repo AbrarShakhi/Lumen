@@ -7,13 +7,6 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
 
-/**
- * One launchable activity, with its match forms precomputed.
- *
- * `normalized_label` and `acronym` are derived at index time rather than per keystroke:
- * normalising a few hundred labels on every character typed is exactly the kind of work
- * that makes a search field feel sluggish.
- */
 @Entity(tableName = "app_index", primaryKeys = ["package_name", "activity_name"])
 data class AppIndexEntity(
     @ColumnInfo(name = "package_name") val packageName: String,
@@ -40,7 +33,6 @@ interface AppIndexDao {
     @Query("DELETE FROM app_index WHERE package_name = :packageName")
     suspend fun deletePackage(packageName: String)
 
-    /** Removes anything not seen in the latest full scan. */
     @Query("DELETE FROM app_index WHERE indexed_at < :staleBefore")
     suspend fun deleteStale(staleBefore: Long)
 

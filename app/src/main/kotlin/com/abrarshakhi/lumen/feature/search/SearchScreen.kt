@@ -37,25 +37,8 @@ import com.abrarshakhi.lumen.core.ui.component.PermissionRequestCard
 import com.abrarshakhi.lumen.core.ui.component.ResultActionSheet
 import com.abrarshakhi.lumen.core.ui.component.ResultRow
 
-/**
- * How the search surface is presented.
- *
- * The same screen serves both Lumen's own window and the summon-from-anywhere surface, so
- * the container — opaque and full-bleed, or a floating card over a scrim — is a parameter
- * rather than two divergent copies of the screen.
- */
 enum class SearchPresentation { Fullscreen, Panel }
 
-/**
- * The search surface, with no dependency on DI, navigation or a ViewModel.
- *
- * Everything it renders arrives as [state]; everything it reports leaves through [onIntent].
- * That is what makes it directly testable with a fabricated [SearchState] and previewable
- * without a running app.
- *
- * [textFieldState] is passed in rather than derived from [state] deliberately — see
- * [LumenSearchField] for why the text buffer belongs to the UI.
- */
 @Composable
 fun SearchScreen(
     state: SearchState,
@@ -108,13 +91,6 @@ fun SearchScreen(
     }
 }
 
-/**
- * The floating variant: a card over a dismissible scrim, anchored above the keyboard.
- *
- * The scrim is drawn by the app rather than left to the window's own dimming so that it can
- * also be the dismiss target — tapping away from the panel is the expected way to close a
- * surface you summoned.
- */
 @Composable
 private fun SearchPanel(
     state: SearchState,
@@ -130,21 +106,14 @@ private fun SearchPanel(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.scrim.copy(alpha = SCRIM_ALPHA))
-            // `pointerInput` rather than `clickable`: a clickable node is focusable, and
-            // on this surface it wins focus from the search field, leaving the keyboard up
-            // but the field dead. Back also dismisses, so nothing accessible is lost.
             .pointerInput(onDismiss) { detectTapGestures { onDismiss() } },
         contentAlignment = Alignment.BottomCenter,
     ) {
         Surface(
             modifier = Modifier
-                // safeDrawing already includes the IME inset, so no separate imePadding.
                 .safeDrawingPadding()
                 .padding(horizontal = 12.dp, vertical = 12.dp)
                 .fillMaxWidth()
-                // Consumes taps so they do not fall through to the dismiss scrim behind:
-                // the scrim's gesture detector spans the panel's bounds too, so without
-                // this, tapping the search field would close the surface.
                 .pointerInput(Unit) { detectTapGestures { } },
             shape = RoundedCornerShape(PANEL_CORNER),
             color = MaterialTheme.colorScheme.surface,
@@ -165,13 +134,6 @@ private fun SearchPanel(
     }
 }
 
-/**
- * Field plus results — the part both presentations share.
- *
- * [fillsAvailableSpace] distinguishes the two: full-bleed keeps the field pinned to an edge
- * with results filling the gap, while the panel wraps its content so the card is only as
- * tall as it needs to be.
- */
 @Composable
 private fun SearchBody(
     state: SearchState,
@@ -184,9 +146,6 @@ private fun SearchBody(
     fillsAvailableSpace: Boolean,
 ) {
     Column(modifier) {
-        // Computed inside the column because `weight` only exists in ColumnScope: the
-        // full-bleed layout stretches results to fill the gap between the field and the
-        // opposite edge, while the panel wraps so the card is only as tall as it needs.
         val resultsModifier = if (fillsAvailableSpace) {
             Modifier.weight(1f)
         } else {
@@ -219,7 +178,7 @@ private fun SearchBody(
             when {
                 hasContent -> ResultList(state, onIntent)
 
-                !fillsAvailableSpace -> Unit // the panel simply shrinks when empty
+                !fillsAvailableSpace -> Unit
 
                 state.isQueryBlank -> EmptyMessage(
                     title = stringResource(R.string.search_idle_title),
@@ -267,11 +226,7 @@ private fun ResultList(state: SearchState, onIntent: (SearchIntent) -> Unit) {
 
             items(
                 items = section.results,
-                // Stable identity: without it, a slower provider's results arriving would
-                // scramble row state and animations as the list re-sorts.
                 key = { result -> result.id.value },
-                // Rows differ structurally by category, so naming the type lets Compose
-                // recycle layouts across a heterogeneous list instead of rebuilding them.
                 contentType = { result -> result.category },
             ) { result ->
                 ResultRow(
@@ -328,7 +283,6 @@ private val PANEL_RESULTS_MAX_HEIGHT = 380.dp
 private const val SECTION_HEADER_CONTENT_TYPE = "section-header"
 private const val PERMISSION_CONTENT_TYPE = "permission-request"
 
-/** Section headings are presentation, so the mapping from category to label lives here. */
 private fun ResultCategory.titleRes(): Int = when (this) {
     ResultCategory.Answer -> R.string.section_answer
     ResultCategory.App -> R.string.section_app

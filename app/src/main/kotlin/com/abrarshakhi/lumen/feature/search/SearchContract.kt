@@ -15,11 +15,9 @@ import com.abrarshakhi.lumen.core.mvi.MviEffect
 import com.abrarshakhi.lumen.core.mvi.MviIntent
 import com.abrarshakhi.lumen.core.mvi.MviState
 
-/** What the user did on the search surface. */
 sealed interface SearchIntent : MviIntent {
     data class QueryChanged(val raw: String) : SearchIntent
 
-    /** Tap on a row, or the IME action key on the top-ranked result. */
     data class ResultActivated(val id: ResultId) : SearchIntent
 
     data class ActionInvoked(val id: ResultId, val actionId: String) : SearchIntent
@@ -30,7 +28,6 @@ sealed interface SearchIntent : MviIntent {
     data object Cleared : SearchIntent
 }
 
-/** What happened, in the reducer's vocabulary. */
 sealed interface SearchAction : MviAction {
     data class ResultsUpdated(
         val query: String,
@@ -45,19 +42,8 @@ sealed interface SearchAction : MviAction {
     data object Reset : SearchAction
 }
 
-/**
- * The search screen's complete rendering input.
- *
- * Note what is absent: any branch per provider. Provider-specific richness rides inside
- * each [SearchResult] (its trailing and expanded content), so adding the tenth provider
- * does not add a field here. That is what keeps this screen's ViewModel from becoming a
- * god object as the app grows.
- *
- * The query text buffer is *not* here either — see [SearchScreen].
- */
 @Immutable
 data class SearchState(
-    /** An echo of the current query, used only for empty-state messaging. */
     val query: String = "",
     val sections: List<ResultSection> = emptyList(),
     val pendingProviders: Set<ProviderId> = emptySet(),
@@ -69,28 +55,23 @@ data class SearchState(
     val isSearching: Boolean get() = pendingProviders.isNotEmpty()
     val isQueryBlank: Boolean get() = query.isBlank()
 
-    /** The result the IME action key should activate. */
     val topResult: SearchResult? get() = sections.firstOrNull()?.results?.firstOrNull()
 
     fun resultById(id: ResultId): SearchResult? =
         sections.firstNotNullOfOrNull { section -> section.results.firstOrNull { it.id == id } }
 }
 
-/** The long-press action sheet for one result. */
 @Immutable
 data class ResultSheet(val result: SearchResult)
 
-/** One-shot events. Never part of state. */
 sealed interface SearchEffect : MviEffect {
     data class Launch(val intent: PlatformIntent) : SearchEffect
     data class RequestPermissions(val permissions: List<AppPermission>) : SearchEffect
     data class ShowMessage(val text: TextValue) : SearchEffect
 
-    /** Programmatic query change — applied to the text field the UI owns. */
     data class SetQueryText(val text: String) : SearchEffect
 
     data class Navigate(val route: AppRouteKey) : SearchEffect
 
-    /** Dismiss Lumen, e.g. after launching an app. */
     data object CloseSurface : SearchEffect
 }

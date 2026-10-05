@@ -28,19 +28,10 @@ import android.content.Context
 import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.surface.overlay.QuickSearchActivity
 
-/**
- * A home-screen search bar that opens the Lumen panel.
- *
- * Glance runs in the launcher's process with its own composable dialect, so none of the
- * app's Compose UI can be reused here — this is a deliberately minimal affordance whose
- * only job is to launch the real surface.
- */
 class LumenSearchWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
-            // GlanceTheme picks up the system dynamic colours, so the widget matches the
-            // launcher's wallpaper the way other Material You widgets do.
             GlanceTheme {
                 SearchBar(context)
             }

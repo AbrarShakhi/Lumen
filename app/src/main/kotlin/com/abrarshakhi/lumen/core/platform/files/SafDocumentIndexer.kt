@@ -11,24 +11,12 @@ import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.coroutineContext
 
-/**
- * Walks a user-granted folder and records the documents in it.
- *
- * Exists because scoped storage hides documents from MediaStore: on the test device a
- * plain `.txt` in `Download/` is visible to the shell and invisible to the app. SAF is the
- * only route to them, and SAF has no search — hence an index.
- *
- * Uses raw `ContentResolver` queries against `buildChildDocumentsUriUsingTree` rather than
- * `DocumentFile`, which performs one IPC per attribute per file and is roughly an order of
- * magnitude slower over a large tree.
- */
 class SafDocumentIndexer(
     private val context: Context,
     private val dao: FileIndexDao,
     private val now: () -> Long = System::currentTimeMillis,
 ) {
 
-    /** Walks every granted tree. Safe to call repeatedly; entries are upserted. */
     suspend fun indexAll(): Int = withContext(Dispatchers.IO) {
         var total = 0
         for (permission in context.contentResolver.persistedUriPermissions) {
@@ -43,16 +31,12 @@ class SafDocumentIndexer(
         val rootId = DocumentsContract.getTreeDocumentId(treeUri)
         var count = 0
 
-        // Explicit stack rather than recursion: a deep tree would otherwise risk a
-        // StackOverflowError on a directory structure Lumen does not control.
         val pending = ArrayDeque<Pair<String, String>>()
         pending.add(rootId to "")
 
         val batch = mutableListOf<FileIndexEntity>()
 
         while (pending.isNotEmpty()) {
-            // Cancellation-cooperative: indexing a large tree must stop promptly when the
-            // scope that started it goes away.
             coroutineContext.ensureActive()
 
             val (documentId, path) = pending.removeFirst()
@@ -103,8 +87,6 @@ class SafDocumentIndexer(
                     )
                     count++
 
-                    // Written in batches so a long walk makes results available as it goes,
-                    // and so an interrupted index keeps what it already found.
                     if (batch.size >= BATCH_SIZE) {
                         dao.upsertAll(batch.toList())
                         batch.clear()
@@ -114,7 +96,6 @@ class SafDocumentIndexer(
         }
 
         if (batch.isNotEmpty()) dao.upsertAll(batch)
-        // Anything not seen in this walk has been moved or deleted.
         dao.deleteStale(treeUri.toString(), startedAt)
         return count
     }
@@ -122,7 +103,6 @@ class SafDocumentIndexer(
     private companion object {
         const val BATCH_SIZE = 200
 
-        /** Guards against a pathological tree exhausting memory. */
         const val MAX_PENDING_DIRS = 5_000
     }
 }

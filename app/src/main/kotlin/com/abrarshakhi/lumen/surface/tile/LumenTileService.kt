@@ -7,12 +7,6 @@ import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import com.abrarshakhi.lumen.surface.overlay.QuickSearchActivity
 
-/**
- * Summons Lumen from the Quick Settings panel.
- *
- * A thin launcher into [QuickSearchActivity] — every surface funnels into the same panel,
- * which is why adding this one is a few dozen lines rather than a second search UI.
- */
 class LumenTileService : TileService() {
 
     override fun onStartListening() {
@@ -23,9 +17,6 @@ class LumenTileService : TileService() {
         }
     }
 
-    // The PendingIntent overload only exists from API 34, and minSdk is 30 — so on the
-    // test device the deprecated Intent form is the only one that exists. Lint's check does
-    // not account for the version guard below, hence the suppression rather than a fix.
     @SuppressLint("StartActivityAndCollapseDeprecated")
     override fun onClick() {
         super.onClick()
@@ -33,7 +24,6 @@ class LumenTileService : TileService() {
         val intent = QuickSearchActivity.intent(this)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            // From API 34 the Intent overload is deprecated and a PendingIntent is required.
             startActivityAndCollapse(
                 PendingIntent.getActivity(
                     this,

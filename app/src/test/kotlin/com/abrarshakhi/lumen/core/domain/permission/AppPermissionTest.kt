@@ -5,11 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/**
- * Storage permissions split at API 33. The test device runs API 31 and a modern device runs
- * 36+, so only one of those paths can ever be exercised by hand — encoding the rule as data
- * is what lets both be verified here.
- */
 class AppPermissionTest {
 
     @Test

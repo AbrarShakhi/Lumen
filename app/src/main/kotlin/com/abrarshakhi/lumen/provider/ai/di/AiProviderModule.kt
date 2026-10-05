@@ -12,8 +12,6 @@ import org.koin.dsl.module
 
 val aiProviderModule = module {
 
-    // One backend today. Adding OpenAI or Claude means another implementation bound here
-    // and a way to choose between them — the provider itself does not change.
     single<AiBackend> { GeminiBackend(client = get()) }
 
     single {

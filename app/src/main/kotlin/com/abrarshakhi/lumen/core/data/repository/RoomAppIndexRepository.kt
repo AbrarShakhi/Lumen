@@ -17,13 +17,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-/**
- * The app index, persisted in Room and projected into memory.
- *
- * Room is what makes a cold start fast: the previous scan is available immediately while a
- * fresh one runs in the background, so the first keystroke after launch already has
- * something to match against.
- */
 class RoomAppIndexRepository(
     private val dao: AppIndexDao,
     private val dataSource: LauncherAppsDataSource,
@@ -31,13 +24,9 @@ class RoomAppIndexRepository(
     private val now: () -> Long = System::currentTimeMillis,
 ) : AppIndexRepository {
 
-    // Serialises refreshes so a package-change broadcast arriving mid-scan cannot
-    // interleave two scans and delete the rows the other just wrote.
     private val refreshLock = Mutex()
 
     init {
-        // Keeps the index honest while the app is running: newly installed apps become
-        // searchable immediately, and uninstalled ones stop being offered.
         dataSource.packageChanges()
             .onEach { refresh() }
             .launchIn(scope)
@@ -68,7 +57,6 @@ class RoomAppIndexRepository(
                     )
                 },
             )
-            // Anything not touched by this scan is no longer installed.
             dao.deleteStale(scanStartedAt)
         }
     }

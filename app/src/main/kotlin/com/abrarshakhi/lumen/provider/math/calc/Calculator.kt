@@ -19,29 +19,15 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import kotlin.math.tan
 
-/**
- * Evaluates an arithmetic expression.
- *
- * A precedence-climbing parser rather than shunting-yard: the same single pass handles
- * right-associative `^`, prefix minus, postfix `%` and implicit multiplication without a
- * separate operator stack, and the recursion mirrors the grammar closely enough to read.
- *
- * Pure Kotlin with no Android dependency, so every rule below is unit-testable.
- */
 object Calculator {
 
-    /** Returns null when the input is not an expression at all, rather than throwing. */
     fun evaluate(input: String): Result? {
         val normalized = input.trim()
         if (normalized.isEmpty()) return null
-        // Echoing "42 = 42" back at someone is noise, not an answer. This also covers
-        // signed literals like "-5", which are numbers rather than calculations.
         if (normalized.toDoubleOrNull() != null) return null
 
         return try {
             val tokens = Tokenizer.tokenize(normalized)
-            // A lone single letter is far likelier to be the start of an app name than a
-            // request for Euler's number, so "e" is declined while "pi" and "tau" stand.
             val lone = tokens.singleOrNull()
             if (lone is Token.Identifier && lone.name.length < 2) return null
 
@@ -63,7 +49,6 @@ object Calculator {
         "tau" to 2 * PI,
     )
 
-    /** Trigonometric functions take radians, as the standard library does. */
     private val FUNCTIONS: Map<String, (Double) -> Double> = mapOf(
         "sqrt" to ::sqrt,
         "cbrt" to ::cbrt,
@@ -103,9 +88,7 @@ object Calculator {
 
                 val operator = when {
                     token is Token.Operator -> token.symbol
-                    // "15% of 80" reads naturally and means multiplication.
                     token is Token.Identifier && token.name == "of" -> "*"
-                    // "2(3+4)" and "2pi" are multiplication by juxtaposition.
                     token.startsOperand() -> IMPLICIT_MULTIPLY
                     else -> break
                 }
@@ -133,7 +116,6 @@ object Calculator {
             return parsePostfix()
         }
 
-        /** Postfix `%` divides by a hundred, so `15% * 80` is 12. */
         private fun parsePostfix(): Double {
             var value = parsePrimary()
             while (true) {
@@ -158,7 +140,6 @@ object Calculator {
                     CONSTANTS[token.name]?.let { return it }
                     val function = FUNCTIONS[token.name]
                         ?: throw CalculationException("Unknown name '${token.name}'")
-                    // Parentheses are optional: "sqrt 16" is as clear as "sqrt(16)".
                     val argument = parseExpression(UNARY_PRECEDENCE)
                     function(argument)
                 }
@@ -180,8 +161,6 @@ object Calculator {
             "-" -> left - right
             "*" -> left * right
             "/" -> {
-                // Division by zero yields infinity in IEEE arithmetic; surfacing "∞" as an
-                // answer would imply the calculation succeeded.
                 if (right == 0.0) throw CalculationException("Division by zero")
                 left / right
             }
@@ -206,7 +185,6 @@ object Calculator {
         "*", "/" -> 2
         IMPLICIT_MULTIPLY -> 2
         "^" -> 4
-        // Postfix, handled before binary operators are considered.
         "%" -> null
         else -> null
     }

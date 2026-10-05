@@ -3,16 +3,6 @@ package com.abrarshakhi.lumen.core.data.db
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-/**
- * Schema migrations.
- *
- * Written by hand rather than relying on destructive fallback: the database holds usage
- * statistics that took real use to accumulate, and silently wiping someone's learned
- * ranking on an app update would be a poor trade for a few lines of SQL.
- *
- * The statements below are copied from the exported schema in `app/schemas/`, so they match
- * exactly what Room validates against at startup.
- */
 internal val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -32,9 +22,6 @@ internal val MIGRATION_1_2 = object : Migration(1, 2) {
                 "`title` TEXT NOT NULL, `body` TEXT NOT NULL, content=`notes`)",
         )
 
-        // An external-content FTS table does not populate itself; Room normally installs
-        // these triggers when it creates the table, so a migration must add them too or
-        // the index would stay empty and every note search would return nothing.
         db.execSQL(
             """
             CREATE TRIGGER IF NOT EXISTS room_fts_content_sync_notes_fts_BEFORE_UPDATE
@@ -72,7 +59,6 @@ internal val MIGRATION_1_2 = object : Migration(1, 2) {
     }
 }
 
-/** Adds the SAF document index. Statement copied from the exported schema. */
 internal val MIGRATION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

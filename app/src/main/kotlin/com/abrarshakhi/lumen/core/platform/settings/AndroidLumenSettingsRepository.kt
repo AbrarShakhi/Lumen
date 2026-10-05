@@ -7,12 +7,6 @@ import com.abrarshakhi.lumen.core.domain.repository.LumenSettingEntry
 import com.abrarshakhi.lumen.core.domain.repository.LumenSettingsRepository
 import com.abrarshakhi.lumen.core.domain.search.InternalDestination
 
-/**
- * Lumen's own settings, with titles resolved against the current locale.
- *
- * Keywords are matched in addition to the title so that "dark mode" finds the theme
- * setting even though the screen is called something else.
- */
 class AndroidLumenSettingsRepository(
     private val context: Context,
 ) : LumenSettingsRepository {

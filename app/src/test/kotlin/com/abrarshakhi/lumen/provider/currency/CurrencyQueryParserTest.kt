@@ -45,8 +45,6 @@ class CurrencyQueryParserTest {
 
     @Test
     fun `unit conversions are not claimed as currency`() {
-        // Both providers match "<number> <word> in <word>"; the three-letter rule plus the
-        // known-code check is what stops them both answering the same query.
         assertNull(parse("20 cm in in"))
         assertNull(parse("5 kg in lbs"))
         assertNull(parse("100 f in c"))

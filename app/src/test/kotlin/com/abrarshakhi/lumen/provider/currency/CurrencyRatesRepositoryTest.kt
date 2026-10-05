@@ -19,10 +19,6 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
 
-/**
- * Exercises the Ktor client with `MockEngine`, so the caching policy is tested on the JVM
- * with no network and no device.
- */
 class CurrencyRatesRepositoryTest {
 
     private val body = """{"base":"USD","date":"2026-09-19","rates":{"EUR":0.9,"GBP":0.78}}"""
@@ -82,8 +78,6 @@ class CurrencyRatesRepositoryTest {
 
     @Test
     fun `a stale rate is served when the network fails`() = runTest {
-        // Offline, yesterday's reference rate is far more useful than nothing — as long as
-        // it is labelled.
         var failing = false
         var clock = 0L
         val engine = MockEngine {

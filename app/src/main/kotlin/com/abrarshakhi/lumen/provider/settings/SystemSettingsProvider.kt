@@ -22,12 +22,6 @@ import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Jumps straight to a system settings screen.
- *
- * Matches against each entry's title *and* its keywords, so "wifi" finds "Wi-Fi" and
- * "brightness" finds "Display" — the words people reach for are rarely the screen's name.
- */
 class SystemSettingsProvider(
     private val settings: SystemSettingsRepository,
 ) : SnapshotSearchProvider() {
@@ -60,12 +54,6 @@ class SystemSettingsProvider(
             .take(MAX_RESULTS)
     }
 
-    /**
-     * Best score across the title and every keyword.
-     *
-     * Highlight ranges are kept only when the title itself matched — highlighting a title
-     * using offsets computed against a keyword would underline the wrong characters.
-     */
     private fun SystemSettingEntry.bestMatch(terms: String): Match? {
         val titleMatch = FuzzyMatcher.score(terms, searchable)
         val keywordBest = keywords
@@ -76,7 +64,6 @@ class SystemSettingsProvider(
             titleMatch == null && keywordBest == null -> null
             titleMatch != null && (keywordBest == null || titleMatch.score >= keywordBest.score) ->
                 Match(titleMatch.score, titleMatch.ranges)
-            // A keyword hit is real but indirect, so it scores slightly below a title hit.
             else -> Match(keywordBest!!.score * KEYWORD_PENALTY, emptyList())
         }
     }

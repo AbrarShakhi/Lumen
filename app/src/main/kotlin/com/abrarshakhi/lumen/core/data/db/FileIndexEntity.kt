@@ -7,15 +7,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Upsert
 
-/**
- * A document discovered by walking a folder the user granted through SAF.
- *
- * Indexed into Room rather than queried live, because SAF has no search: finding a file
- * means walking the tree, which is far too slow to do per keystroke.
- *
- * Only documents live here. Media already lives in MediaStore, and duplicating it would
- * mean two sources of truth that drift apart.
- */
 @Entity(tableName = "file_index")
 data class FileIndexEntity(
     @PrimaryKey
@@ -46,11 +37,9 @@ interface FileIndexDao {
     @Upsert
     suspend fun upsertAll(entries: List<FileIndexEntity>)
 
-    /** Removes entries from a tree that the latest walk did not see. */
     @Query("DELETE FROM file_index WHERE tree_uri = :treeUri AND indexed_at < :staleBefore")
     suspend fun deleteStale(treeUri: String, staleBefore: Long)
 
-    /** Used when the user revokes a folder. */
     @Query("DELETE FROM file_index WHERE tree_uri = :treeUri")
     suspend fun deleteTree(treeUri: String)
 

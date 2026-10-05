@@ -7,12 +7,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.isSpecified
 import androidx.compose.ui.unit.sp
 
-/**
- * Builds a type scale scaled by the user's font-size preference.
- *
- * Scaling here rather than via `LocalDensity` keeps the system's own accessibility font
- * scaling intact — this multiplies on top of it rather than replacing it.
- */
 internal fun lumenTypography(scale: Float): Typography {
     val base = Typography()
     fun TextStyle.scaled() = copy(
@@ -38,7 +32,6 @@ internal fun lumenTypography(scale: Float): Typography {
     )
 }
 
-/** The query field: large, light, and unmistakably the focus of the screen. */
 internal val SearchFieldTextStyle = TextStyle(
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Normal,

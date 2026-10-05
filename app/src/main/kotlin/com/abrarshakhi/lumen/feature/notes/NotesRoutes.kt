@@ -34,8 +34,6 @@ fun NoteEditorRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Loading and saving are the ViewModel's business: saving from a composable's onDispose
-    // does not work, because the composition scope is already cancelled by then.
     viewModel.effects.CollectEffects { effect ->
         when (effect) {
             NoteEditorEffect.Close -> onClose()

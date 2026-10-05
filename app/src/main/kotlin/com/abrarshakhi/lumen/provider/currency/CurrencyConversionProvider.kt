@@ -23,17 +23,6 @@ import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Converts between currencies at live rates.
- *
- * The first genuinely streaming provider, and the reason [SearchProvider.search] returns a
- * `Flow` rather than a single suspending value: it emits the cached rate immediately so an
- * answer appears with the keystroke, then emits again if the network returns a fresher one.
- * A `suspend fun` could only have done one or the other.
- *
- * Note it does not declare `PlatformCapability.Network` as required — offline, a cached
- * rate is still a useful answer, clearly marked as such.
- */
 class CurrencyConversionProvider(
     private val rates: CurrencyRatesRepository,
 ) : SearchProvider {
@@ -44,10 +33,7 @@ class CurrencyConversionProvider(
         displayName = TextValue.Res(R.string.provider_currency),
         category = ResultCategory.Answer,
         order = 4,
-        // Generous: the budget has to cover a network round trip, and the cached emission
-        // has already landed long before this matters.
         timeout = 8.seconds,
-        // Enough to avoid firing a request at every keystroke mid-typing.
         debounce = 250.milliseconds,
         minQueryLength = 8,
     )
@@ -56,8 +42,6 @@ class CurrencyConversionProvider(
         val request = CurrencyQueryParser.parse(query.terms, ExchangeRatesClient.SUPPORTED)
             ?: return@flow
 
-        // Paint whatever is already known, marked partial so the engine keeps this provider
-        // pending and the UI knows more may follow.
         val cached = rates.cachedRates(request.from)?.let { result(request, it) }
         if (cached != null) {
             emit(ProviderResults(providerId = id, results = listOf(cached), isPartial = true))
@@ -66,10 +50,7 @@ class CurrencyConversionProvider(
         val fresh = rates.ratesFor(request.from)?.let { result(request, it) }
         when {
             fresh != null -> emit(ProviderResults(providerId = id, results = listOf(fresh)))
-            // Nothing cached and the network failed: say nothing rather than guess.
             cached == null -> emit(ProviderResults.empty(id))
-            // Cached answer already emitted; close the stream so the provider stops
-            // being reported as pending.
             else -> emit(ProviderResults(providerId = id, results = listOf(cached)))
         }
     }
@@ -91,7 +72,6 @@ class CurrencyConversionProvider(
                 append(' ')
                 append(request.from)
                 append(" · 1 ${request.from} = ${NumberFormatting.format(rate)} ${request.to}")
-                // Says plainly when the number is not current, rather than implying it is.
                 if (rates.isStale) append(" · offline rate")
             },
             icon = IconSource.Vector(LumenIcon.Currency),

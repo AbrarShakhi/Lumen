@@ -1,6 +1,5 @@
 package com.abrarshakhi.lumen.core.domain.repository
 
-/** A file on the device that Lumen can open. */
 data class DeviceFile(
     val id: Long,
     val name: String,
@@ -8,7 +7,6 @@ data class DeviceFile(
     val mimeType: String?,
     val sizeBytes: Long,
     val modifiedAtSeconds: Long,
-    /** Directory the file sits in, shown as context — two files often share a name. */
     val folder: String?,
 ) {
     val kind: FileKind get() = FileKind.of(mimeType, name)
@@ -25,8 +23,6 @@ enum class FileKind {
                 mimeType.startsWith("video/") -> return Video
                 mimeType.startsWith("audio/") -> return Audio
             }
-            // Many files arrive as application/octet-stream, so the extension is often the
-            // only usable signal about what something actually is.
             return when (name.substringAfterLast('.', "").lowercase()) {
                 "pdf", "doc", "docx", "txt", "md", "rtf", "odt", "xls", "xlsx", "ppt", "pptx" -> Document
                 "zip", "rar", "7z", "tar", "gz", "apk" -> Archive
@@ -39,14 +35,6 @@ enum class FileKind {
     }
 }
 
-/**
- * Searches files on the device.
- *
- * Queries the platform's media index on demand rather than building one of Lumen's own:
- * MediaStore is already a maintained index of the device's files, and duplicating it into
- * Room would mean a slow first scan, a background job to keep it fresh, and two sources of
- * truth that can disagree.
- */
 interface FileRepository {
     suspend fun search(query: String, limit: Int = 20): List<DeviceFile>
 }

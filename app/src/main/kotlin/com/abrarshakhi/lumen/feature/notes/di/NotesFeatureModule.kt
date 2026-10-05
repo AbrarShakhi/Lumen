@@ -9,7 +9,6 @@ import org.koin.dsl.module
 
 val notesFeatureModule = module {
     viewModelOf(::NotesViewModel)
-    // The editor is parameterised by which note it is editing; null means a new one.
     viewModel { (noteId: Long?) ->
         NoteEditorViewModel(
             notes = get(),

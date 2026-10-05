@@ -4,26 +4,6 @@ import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/**
- * Enforces Clean Architecture layering at build time.
- *
- * Lumen is a single Gradle module, so nothing but this test stops a wrong-direction import.
- * It exists so that "domain does not know about Android" is a compile-time fact rather than
- * a convention someone has to remember at 1am — and so that extracting these packages into
- * real Gradle modules later is a `git mv` rather than an archaeology project.
- *
- * Package layout intentionally mirrors the future module graph:
- *   app | surface -> feature | provider | core
- *   feature -> core
- *   provider -> core                (never another provider, never a feature)
- *   core/ui -> core/domain, core/mvi
- *   core/data, core/platform -> core/domain
- *   core/domain, core/mvi -> nothing
- *
- * `surface/` sits alongside `app/` rather than beneath it: each surface is an Android entry
- * point that mounts the same shell, so it depends on `app/` for AppRoot. If these are ever
- * split into real modules, AppRoot moves to a shared shell module that both depend on.
- */
 class ArchitectureTest {
 
     private data class Rule(
@@ -73,9 +53,6 @@ class ArchitectureTest {
         Rule(
             description = "core must never depend on features or providers",
             appliesTo = { it.startsWith("core/") },
-            // Providers added here after a real violation: the calendar formatter interface
-            // was declared in provider/ and implemented in core/platform, which inverts the
-            // dependency direction. Shared abstractions belong in core/domain.
             forbiddenImports = listOf(
                 "com.abrarshakhi.lumen.feature.",
                 "com.abrarshakhi.lumen.provider.",
@@ -136,7 +113,6 @@ class ArchitectureTest {
 
     @Test
     fun `the search engine does not know about any concrete provider`() {
-        // The core promise of the architecture: adding a provider never edits the engine.
         val engineSources = sourceFiles()
             .filter { (path, _) -> path.startsWith("core/domain/search/") }
 

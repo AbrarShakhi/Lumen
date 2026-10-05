@@ -25,7 +25,6 @@ class ConversionParserTest {
 
     @Test
     fun `temperature uses an affine conversion, not a ratio`() {
-        // The classic mistake: scaling 100F by 5/9 gives 55.6 instead of 37.8.
         assertEquals(37.7778, convert("100f in c"), 0.001)
         assertEquals(32.0, convert("0 c in f"), 1e-9)
         assertEquals(212.0, convert("100 celsius to fahrenheit"), 1e-9)
@@ -69,7 +68,6 @@ class ConversionParserTest {
 
     @Test
     fun `mismatched dimensions are refused`() {
-        // Better to decline than to invent a confidently wrong number.
         assertNull(ConversionParser.parse("5 kg in miles"))
         assertNull(ConversionParser.parse("20 c in gb"))
     }
@@ -90,13 +88,11 @@ class ConversionParserTest {
 
     @Test
     fun `inch abbreviation survives colliding with the connecting word`() {
-        // "20 in in cm" — the first "in" is a unit, the second is the connector.
         assertEquals(50.8, convert("20 in in cm"), 0.001)
     }
 
     @Test
     fun `every alias is unique across the whole registry`() {
-        // A duplicate alias would make conversion depend on declaration order.
         val all = UnitRegistry.units.flatMap { it.aliases }
         val duplicates = all.groupingBy { it }.eachCount().filterValues { it > 1 }.keys
         assertEquals(emptySet(), duplicates, "ambiguous unit aliases: $duplicates")

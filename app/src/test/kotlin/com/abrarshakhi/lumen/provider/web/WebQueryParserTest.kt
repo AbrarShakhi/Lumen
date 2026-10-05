@@ -4,10 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
-/**
- * These rules decide when typing turns into a web search, a specific engine, or opening an
- * address — the places where a launcher most easily surprises someone.
- */
 class WebQueryParserTest {
 
     private fun parse(raw: String) = WebQueryParser.parse(raw)
@@ -33,14 +29,12 @@ class WebQueryParserTest {
 
     @Test
     fun `a keyword only counts as a whole first word`() {
-        // "ghost" begins with the GitHub keyword "gh" but is plainly not that instruction.
         val parsed = assertIs<WebQueryParser.Parsed.Search>(parse("ghost writer"))
         assertEquals("ghost writer", parsed.terms)
     }
 
     @Test
     fun `a lone keyword is not yet a search`() {
-        // Someone mid-typing "ggl…" should not be offered a search for nothing.
         assertIs<WebQueryParser.Parsed.None>(parse("ggl"))
         assertIs<WebQueryParser.Parsed.None>(parse("ggl   "))
     }
@@ -86,7 +80,6 @@ class WebQueryParserTest {
 
     @Test
     fun `every built-in engine has unique keywords`() {
-        // Overlapping keywords would make routing depend on declaration order.
         val all = WebSearchEngine.BuiltIn.flatMap { it.keywords }
         assertEquals(all.size, all.toSet().size, "duplicate keyword across engines: $all")
     }

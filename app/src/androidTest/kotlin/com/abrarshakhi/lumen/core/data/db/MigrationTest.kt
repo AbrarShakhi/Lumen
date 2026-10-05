@@ -8,14 +8,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertEquals
 
-/**
- * Verifies the hand-written 1→2 migration.
- *
- * Worth testing rather than trusting: the migration creates an external-content FTS4 table,
- * whose synchronisation triggers Room installs automatically on a fresh database but which
- * a migration has to write out by hand. Get those wrong and the index stays silently empty
- * — note search would simply never find anything, with no error to notice.
- */
 @RunWith(AndroidJUnit4::class)
 class MigrationTest {
 
@@ -35,21 +27,17 @@ class MigrationTest {
             close()
         }
 
-        // Validates the resulting schema against the exported 2.json.
         val db = helper.runMigrationsAndValidate(TEST_DB, 2, true, MIGRATION_1_2)
 
-        // Existing data must survive: usage stats are learned over real use.
         db.query("SELECT launch_count FROM usage_stats WHERE ranking_key = 'app:demo'").use { cursor ->
             assertEquals(true, cursor.moveToFirst())
             assertEquals(7, cursor.getInt(0))
         }
 
-        // The triggers must actually populate the index, or search finds nothing.
         db.execSQL(
             "INSERT INTO notes (title, body, created_at, updated_at) " +
                 "VALUES ('Shopping', 'milk and bread', 1, 1)",
         )
-        // `notes` and `notes_fts` both have a `title` column, so it must be qualified.
         db.query(
             "SELECT notes.title FROM notes JOIN notes_fts ON notes.rowid = notes_fts.rowid " +
                 "WHERE notes_fts MATCH 'milk*'",
@@ -78,7 +66,6 @@ class MigrationTest {
             assertEquals(true, cursor.moveToFirst())
             assertEquals("Keep me", cursor.getString(0))
         }
-        // The new table must exist and be queryable.
         db.query("SELECT COUNT(*) FROM file_index").use { cursor ->
             assertEquals(true, cursor.moveToFirst())
             assertEquals(0, cursor.getInt(0))

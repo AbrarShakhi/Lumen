@@ -29,12 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abrarshakhi.lumen.R
 import org.koin.androidx.compose.koinViewModel
 
-/**
- * Lets the user grant folders for document search.
- *
- * Explains *why* the grant is needed: without that, being asked to pick a folder to search
- * your own files looks arbitrary rather than a consequence of scoped storage.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FileFoldersRoute(

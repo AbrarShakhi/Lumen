@@ -20,14 +20,6 @@ import com.abrarshakhi.lumen.core.domain.search.SnapshotSearchProvider
 import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Searches the user's notes.
- *
- * Backed by SQLite full-text search rather than the in-memory fuzzy matcher the other
- * providers use: note bodies are unbounded text, and scanning every one of them on each
- * keystroke would not stay fast. The trade is that matching is word-prefix based rather
- * than typo-tolerant.
- */
 class NotesSearchProvider(
     private val notes: NoteRepository,
 ) : SnapshotSearchProvider() {
@@ -39,7 +31,6 @@ class NotesSearchProvider(
         category = ResultCategory.Note,
         order = 50,
         timeout = 400.milliseconds,
-        // Touches the database, so it is worth not firing on every keystroke.
         debounce = 80.milliseconds,
         minQueryLength = 2,
     )
@@ -54,8 +45,6 @@ class NotesSearchProvider(
         subtitle = preview.take(PREVIEW_LENGTH).ifBlank { null },
         icon = IconSource.Vector(LumenIcon.Note),
         category = ResultCategory.Note,
-        // FTS reports no usable relevance score here, so ordering comes from the query's
-        // recency sort and results share a single relevance value.
         score = 0.8f,
         rankingKey = "note:$id",
         actions = ResultActions(

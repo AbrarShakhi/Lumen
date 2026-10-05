@@ -6,17 +6,6 @@ import com.abrarshakhi.lumen.core.domain.match.TextNormalizer
 import com.abrarshakhi.lumen.core.domain.repository.DeviceFile
 import com.abrarshakhi.lumen.core.domain.repository.FileRepository
 
-/**
- * File search across both places files can live.
- *
- * Two sources are unavoidable, not a design preference: scoped storage gives the app a
- * MediaStore view containing only media, while documents are reachable solely through a
- * user-granted SAF tree. Verified on the test device — a `.txt` in the public `Download/`
- * folder is visible to the shell and invisible to the app.
- *
- * Media comes first because it is the larger and more frequently wanted set, and results
- * are de-duplicated by name in case a granted tree overlaps a media folder.
- */
 class CombinedFileRepository(
     private val mediaStore: MediaStoreFileDataSource,
     private val documents: FileIndexDao,
@@ -38,8 +27,6 @@ class CombinedFileRepository(
     }
 
     private fun FileIndexEntity.toDeviceFile() = DeviceFile(
-        // Document URIs have no numeric id; the string identity is what matters, and the
-        // hash only needs to be stable within one result set.
         id = documentUri.hashCode().toLong(),
         name = name,
         uri = documentUri,

@@ -29,10 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.ui.text.resolve
 
-/**
- * One row per registered search source: switch it off, or resolve whatever permission is
- * standing in its way.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProvidersScreen(
@@ -92,8 +88,6 @@ private fun ProviderRow(
     onResolvePermission: () -> Unit,
 ) {
     val permissionLabel = provider.permission.label()
-    // When something is blocking the source, the row's job is to resolve that rather than
-    // to toggle a switch that would have no visible effect.
     val needsAttention = provider.permission is ProviderPermissionState.Missing ||
         provider.permission is ProviderPermissionState.Blocked
 
@@ -128,8 +122,6 @@ private fun ProviderRow(
         Switch(
             checked = provider.enabled,
             onCheckedChange = null,
-            // A source that cannot run is not meaningfully "on", so the switch stays
-            // inert until the permission is resolved.
             enabled = !needsAttention,
         )
     }

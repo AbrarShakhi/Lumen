@@ -7,11 +7,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Guards a bug that actually shipped into a build: contact search stayed permanently empty
- * after granting the permission, because the failed read performed at startup had been
- * cached as though it were a legitimate "no contacts" answer.
- */
 class CachedContactRepositoryTest {
 
     private fun contact(name: String) = Contact(
@@ -56,7 +51,6 @@ class CachedContactRepositoryTest {
 
     @Test
     fun `a genuinely empty address book is cached`() = runTest {
-        // Distinct from a failure: this is a real answer and should not be re-queried.
         var loads = 0
         val repository = CachedContactRepository {
             loads++

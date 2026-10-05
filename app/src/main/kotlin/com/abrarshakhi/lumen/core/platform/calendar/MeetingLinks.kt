@@ -1,12 +1,5 @@
 package com.abrarshakhi.lumen.core.platform.calendar
 
-/**
- * Finds a joinable meeting link in event text.
- *
- * Meeting URLs turn up in the location field, the description, or neither, depending on
- * which tool created the event — so both are searched, location first because a link there
- * is deliberate rather than incidental.
- */
 object MeetingLinks {
 
     private val PROVIDERS = listOf(

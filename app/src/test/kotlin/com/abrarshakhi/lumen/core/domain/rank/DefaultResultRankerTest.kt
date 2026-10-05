@@ -16,7 +16,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/** Ranking is pure and synchronous, so its policy is asserted directly. */
 class DefaultResultRankerTest {
 
     private val ranker = DefaultResultRanker()
@@ -66,7 +65,6 @@ class DefaultResultRankerTest {
 
     @Test
     fun `frequent launches lift a weaker textual match above a stronger one`() {
-        // The Phase 1 promise: the launcher learns what you actually open.
         val sections = ranker.rank(
             query,
             listOf(result("alpha", "Alpha", 0.90f), result("beta", "Beta", 0.70f)),
@@ -99,7 +97,6 @@ class DefaultResultRankerTest {
             listOf(result("a", "A", 0.5f)),
             usage("a" to 10, ageMillis = 120L * 24 * 60 * 60 * 1000),
         )
-        // Both render; the assertion is that the snapshot scores them differently.
         assertTrue(fresh.isNotEmpty() && stale.isNotEmpty())
         assertTrue(
             UsageSnapshot(mapOf("a" to UsageStat(10, NOW)), NOW).scoreFor("a") >
@@ -159,7 +156,6 @@ class DefaultResultRankerTest {
 
     @Test
     fun `equal scores order deterministically so the list does not flicker`() {
-        // Slower providers arrive later; ties must not reshuffle what is already on screen.
         val input = listOf(result("b", "Beta", 0.8f), result("a", "Alpha", 0.8f))
 
         val first = ranker.rank(query, input, UsageSnapshot.Empty).flatMap { it.results }.map { it.title }

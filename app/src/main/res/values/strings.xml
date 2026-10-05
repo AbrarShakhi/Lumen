@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Lumen</string>
 
-    <!-- Search surface -->
     <string name="search_hint">Search apps, contacts, files…</string>
     <string name="search_clear">Clear query</string>
     <string name="search_empty_title">No results</string>
@@ -9,7 +8,6 @@
     <string name="search_idle_title">Search anything</string>
     <string name="search_idle_subtitle">Apps, contacts, files, settings and the web</string>
 
-    <!-- Result sections -->
     <string name="section_answer">Answer</string>
     <string name="section_app">Apps</string>
     <string name="section_shortcut">Shortcuts</string>
@@ -22,12 +20,10 @@
     <string name="section_system">Lumen</string>
     <string name="section_show_more">Show more</string>
 
-    <!-- Permissions -->
     <string name="permission_title">Search your %1$s</string>
     <string name="permission_body">Tap to allow Lumen access</string>
     <string name="permission_dismiss">Not now</string>
 
-    <!-- Result actions -->
     <string name="action_open">Open</string>
     <string name="action_app_info">App info</string>
     <string name="action_uninstall">Uninstall</string>
@@ -41,7 +37,6 @@
     <string name="action_open_link">Open link</string>
     <string name="copied">Copied</string>
 
-    <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_open">Settings</string>
     <string name="settings_back">Back</string>
@@ -64,11 +59,6 @@
     <string name="settings_search_sources">Search</string>
     <string name="settings_search_sources_summary">Choose what Lumen searches</string>
 
-    <!--
-      Provider names. Distinct from the section headings above: a heading labels a *kind of
-      result* ("Answer"), while these name the *source* that produced it, and several
-      sources can share one heading.
-    -->
     <string name="provider_apps">Apps</string>
     <string name="provider_contacts">Contacts</string>
     <string name="provider_web">Web search</string>
@@ -83,12 +73,10 @@
     <string name="provider_files">Files</string>
     <string name="provider_calendar">Calendar</string>
 
-    <!-- Launch surfaces -->
     <string name="widget_hint">Search</string>
     <string name="widget_description">A search bar that opens Lumen</string>
     <string name="tile_label">Lumen search</string>
 
-    <!-- Launcher mode -->
     <string name="launcher_title">Launcher mode</string>
     <string name="launcher_explainer">Lumen can replace your home screen, so pressing Home opens search. This also unlocks app shortcuts, which Android only shares with the default launcher.</string>
     <string name="launcher_offer">Offer Lumen as a home app</string>
@@ -103,7 +91,6 @@
     <string name="calendar_join">Join call</string>
     <string name="calendar_call">Call</string>
 
-    <!-- Document folders (SAF) -->
     <string name="files_folders_title">Document folders</string>
     <string name="files_folders_explainer">Android lets apps search your photos and videos, but not your documents. Grant Lumen a folder and it can search the files inside it too.</string>
     <string name="files_add_folder">Add a folder</string>
@@ -111,7 +98,6 @@
     <string name="files_indexed_count">%1$d documents indexed</string>
     <string name="settings_files">Files</string>
 
-    <!-- AI -->
     <string name="ai_needs_key">Add an API key to ask AI</string>
     <string name="ai_invalid_key">That API key was rejected</string>
     <string name="ai_access_denied">This key\'s Google project is denied access</string>
@@ -129,7 +115,6 @@
     <string name="ai_get_key">Where to get a key</string>
     <string name="ai_usage_hint">Type \u201Cai &lt;question&gt;\u201D in search to ask.</string>
 
-    <!-- System settings entries. Titles mirror what Android calls each screen. -->
     <string name="setting_wifi">Wi-Fi</string>
     <string name="setting_bluetooth">Bluetooth</string>
     <string name="setting_mobile_data">Mobile network</string>
@@ -158,13 +143,11 @@
     <string name="setting_developer">Developer options</string>
     <string name="setting_about">About phone</string>
 
-    <!-- Lumen's own settings, searchable like any other result. -->
     <string name="lumen_setting_theme">Lumen theme</string>
     <string name="lumen_setting_sources">Lumen search sources</string>
     <string name="lumen_setting_all">Lumen settings</string>
     <string name="lumen_setting_hint">Open in Lumen</string>
 
-    <!-- Notes -->
     <string name="notes_title">Notes</string>
     <string name="notes_new">New note</string>
     <string name="notes_empty">No notes yet</string>
@@ -177,7 +160,6 @@
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
 
-    <!-- Providers -->
     <string name="providers_title">Search sources</string>
     <string name="providers_permission_needed">Permission needed</string>
     <string name="providers_permission_granted">Ready</string>

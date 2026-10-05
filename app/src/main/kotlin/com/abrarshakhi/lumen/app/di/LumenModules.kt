@@ -20,13 +20,6 @@ import com.abrarshakhi.lumen.provider.units.di.unitsProviderModule
 import com.abrarshakhi.lumen.provider.web.di.webProviderModule
 import org.koin.core.module.Module
 
-/**
- * The composition root: the one place that knows every module.
- *
- * A list here is not an open/closed violation — naming every concretion is precisely a
- * composition root's job. What matters is that `SearchEngine` and `SearchViewModel` never
- * appear in it, so adding a provider adds exactly one line below and changes nothing else.
- */
 object LumenModules {
     val all: List<Module> = listOf(
         platformModule,
@@ -36,7 +29,6 @@ object LumenModules {
         settingsFeatureModule,
         notesFeatureModule,
 
-        // Search providers — one line per capability.
         mathProviderModule,
         unitsProviderModule,
         currencyProviderModule,

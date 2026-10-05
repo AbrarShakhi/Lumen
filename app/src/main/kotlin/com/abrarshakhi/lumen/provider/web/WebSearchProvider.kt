@@ -20,14 +20,6 @@ import java.net.URLEncoder
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Always-available fallback: search the web, open a typed address, or route to a specific
- * engine by keyword.
- *
- * Ranked last by [ResultCategory.WebSearch]'s weight, on purpose — the web is always able
- * to answer, so if it competed on score it would crowd out local results that are almost
- * always what the user actually meant.
- */
 class WebSearchProvider(
     private val engines: List<WebSearchEngine> = WebSearchEngine.BuiltIn,
     private val defaultEngine: WebSearchEngine = WebSearchEngine.Default,
@@ -39,7 +31,6 @@ class WebSearchProvider(
         displayName = TextValue.Res(R.string.provider_web),
         category = ResultCategory.WebSearch,
         order = 90,
-        // Purely local string work — no network, so nothing to debounce or time out for.
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,
         minQueryLength = 2,
@@ -51,8 +42,6 @@ class WebSearchProvider(
 
             is WebQueryParser.Parsed.Url -> listOf(openUrlResult(parsed.url))
 
-            // An explicit keyword is an instruction, so it outscores the generic fallback
-            // and is the only web result offered.
             is WebQueryParser.Parsed.Engine ->
                 listOf(searchResult(parsed.engine, parsed.terms, score = 1f))
 
@@ -70,8 +59,6 @@ class WebSearchProvider(
             icon = IconSource.Vector(engine.icon),
             category = ResultCategory.WebSearch,
             score = score,
-            // Usage accrues per engine rather than per query, or every distinct search
-            // would be its own never-repeated ranking key and learn nothing.
             rankingKey = "web:${engine.id}",
             actions = ResultActions(
                 primary = ResultAction(
@@ -104,7 +91,6 @@ class WebSearchProvider(
         subtitle = null,
         icon = IconSource.Vector(LumenIcon.Web),
         category = ResultCategory.WebSearch,
-        // A typed address is unambiguous, so it beats searching for its text.
         score = 1f,
         rankingKey = "web:url",
         actions = ResultActions(

@@ -36,20 +36,12 @@ import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.abrarshakhi.lumen.core.domain.search.LumenIcon
 
-/**
- * Maps the domain's icon vocabulary onto concrete vectors.
- *
- * The indirection is what lets providers name an icon without the domain layer importing
- * Compose. This `when` is over a closed enum, so it is exhaustive by construction.
- */
 internal fun LumenIcon.toImageVector(): ImageVector = when (this) {
     LumenIcon.Search -> Icons.Filled.Search
     LumenIcon.App -> Icons.Filled.Apps
     LumenIcon.Contact -> Icons.Filled.Person
     LumenIcon.Phone -> Icons.Filled.Call
     LumenIcon.Message -> Icons.AutoMirrored.Filled.Message
-    // Forum's stacked bubbles read differently from Message's single bubble at
-    // icon size; the two were indistinguishable side by side in a result row.
     LumenIcon.Chat -> Icons.Filled.Forum
     LumenIcon.File -> Icons.Filled.Description
     LumenIcon.Folder -> Icons.Filled.Folder

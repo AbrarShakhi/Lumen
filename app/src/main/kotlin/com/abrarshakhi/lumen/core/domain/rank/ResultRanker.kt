@@ -4,12 +4,6 @@ import com.abrarshakhi.lumen.core.domain.search.ResultCategory
 import com.abrarshakhi.lumen.core.domain.search.SearchQuery
 import com.abrarshakhi.lumen.core.domain.search.SearchResult
 
-/**
- * Orders and groups results for display.
- *
- * Pure and synchronous by design: everything it needs is already in memory, which makes
- * the whole ranking policy testable with plain `assertEquals` and keeps it off the I/O path.
- */
 interface ResultRanker {
     fun rank(
         query: SearchQuery,
@@ -18,11 +12,9 @@ interface ResultRanker {
     ): List<ResultSection>
 }
 
-/** Tunable weights for [DefaultResultRanker]. */
 data class RankingWeights(
     val relevance: Float = 1.0f,
     val usage: Float = 0.45f,
-    /** Results per section before "show more". */
     val sectionCaps: Map<ResultCategory, Int> = DEFAULT_CAPS,
 ) {
     companion object {
@@ -58,8 +50,6 @@ class DefaultResultRanker(
             .map { result -> result to finalScore(result, usage) }
             .sortedWith(
                 compareByDescending<Pair<SearchResult, Float>> { it.second }
-                    // Ties must not reorder between emissions, or the list flickers as
-                    // slower providers arrive. Title then id give a total order.
                     .thenBy { it.first.title.lowercase() }
                     .thenBy { it.first.id.value },
             )
@@ -83,7 +73,6 @@ class DefaultResultRanker(
         val familiarity = usage.scoreFor(result.rankingKey) * weights.usage
         return relevance + familiarity
     }
-
 
     private companion object {
         const val DEFAULT_CAP = 3

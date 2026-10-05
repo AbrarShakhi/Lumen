@@ -10,13 +10,6 @@ import com.abrarshakhi.lumen.core.domain.repository.SystemSettingsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * The catalogue of settings screens, filtered to those this device actually has.
- *
- * Each candidate is resolved against the package manager once and the surviving set is
- * cached: an entry that cannot be resolved would otherwise appear in results and do nothing
- * when tapped, which is worse than not offering it.
- */
 class AndroidSystemSettingsRepository(
     private val context: Context,
 ) : SystemSettingsRepository {
@@ -65,9 +58,6 @@ class AndroidSystemSettingsRepository(
             Candidate(Settings.ACTION_CAST_SETTINGS, R.string.setting_cast, listOf("screen mirror", "chromecast")),
             Candidate(Settings.ACTION_DISPLAY_SETTINGS, R.string.setting_display, listOf("brightness", "screen", "dark mode")),
             Candidate(Settings.ACTION_SOUND_SETTINGS, R.string.setting_sound, listOf("volume", "ringtone", "vibrate")),
-            // Not a public constant, but a long-standing action on stock and OEM builds.
-            // Safe to list unchecked because every candidate is resolve-tested first: if a
-            // device lacks it, the entry is simply dropped rather than failing on tap.
             Candidate("android.settings.NOTIFICATION_SETTINGS", R.string.setting_notifications, listOf("alerts", "badges")),
             Candidate(Settings.ACTION_APPLICATION_SETTINGS, R.string.setting_apps, listOf("applications", "uninstall")),
             Candidate(Settings.ACTION_INTERNAL_STORAGE_SETTINGS, R.string.setting_storage, listOf("space", "free up", "disk")),

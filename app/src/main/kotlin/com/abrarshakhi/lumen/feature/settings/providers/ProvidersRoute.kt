@@ -29,8 +29,6 @@ fun ProvidersRoute(
         viewModel.dispatch(ProvidersIntent.Refreshed)
     }
 
-    // Permissions can be changed in system settings while Lumen is backgrounded, and there
-    // is no flow to observe, so state is re-read every time the screen comes back.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.dispatch(ProvidersIntent.Refreshed)
     }

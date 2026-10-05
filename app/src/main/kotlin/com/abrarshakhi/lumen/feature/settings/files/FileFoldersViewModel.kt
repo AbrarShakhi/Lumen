@@ -18,14 +18,6 @@ data class FileFoldersState(
     val isIndexing: Boolean = false,
 )
 
-/**
- * Manages the folders Lumen may search for documents.
- *
- * Indexing runs here rather than in a background worker: it is started by an explicit user
- * action, the user is looking at the screen while it happens, and ColorOS is aggressive
- * about killing background jobs. The indexer upserts incrementally, so an interrupted walk
- * keeps whatever it already found rather than starting over.
- */
 class FileFoldersViewModel(
     private val grants: DocumentTreeGrants,
     private val indexer: SafDocumentIndexer,

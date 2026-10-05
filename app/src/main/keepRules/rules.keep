@@ -1,12 +1,3 @@
-# R8 keep rules. AGP 9 merges every file in src/main/keepRules.
-#
-# Only rules that are actually necessary are listed. Each one exists because something
-# reaches the code by name at runtime, where R8's static analysis cannot see the link.
-
-# --- kotlinx.serialization -----------------------------------------------------------------
-# Serializers are looked up reflectively from the companion object. Without this, @Serializable
-# classes survive but their generated serializers are stripped or renamed, and every decode
-# fails at runtime rather than at build time.
 -keepattributes *Annotation*, InnerClasses
 -dontnote kotlinx.serialization.**
 
@@ -18,27 +9,16 @@
 }
 -keep,includedescriptorclasses class com.abrarshakhi.lumen.**$$serializer { *; }
 
-# Navigation 3 restores the back stack by deserialising route types by name.
 -keep class com.abrarshakhi.lumen.app.navigation.AppRouteKey** { *; }
 
-# --- Room ----------------------------------------------------------------------------------
-# Generated *_Impl classes are instantiated reflectively by Room at runtime.
 -keep class com.abrarshakhi.lumen.core.data.db.**_Impl { *; }
 
-# --- Ktor / OkHttp -------------------------------------------------------------------------
-# Ktor selects an engine via ServiceLoader, and OkHttp references optional platform classes
-# that are absent on Android.
 -dontwarn org.slf4j.**
 -dontwarn org.conscrypt.**
 -dontwarn org.bouncycastle.**
 -dontwarn org.openjsse.**
 -keepclassmembers class io.ktor.** { volatile <fields>; }
 
-# --- Koin ----------------------------------------------------------------------------------
-# Definitions are keyed by type, so type information has to survive.
 -keepattributes Signature, *Annotation*
 
-# --- Entry points ---------------------------------------------------------------------------
-# Referenced from the manifest by name; R8 keeps manifest components itself, but the widget
-# receiver's Glance session and the tile are easy to get wrong, so they are explicit.
 -keep class com.abrarshakhi.lumen.surface.** { *; }

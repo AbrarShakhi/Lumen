@@ -5,13 +5,6 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-/**
- * Lumen's local database.
- *
- * Holds *indexes and history*, never cached search results: results are cheap to recompute
- * from the indexes, and caching them would buy milliseconds in exchange for staleness bugs
- * for the life of the project.
- */
 @Database(
     entities = [
         UsageStatEntity::class,

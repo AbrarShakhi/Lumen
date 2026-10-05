@@ -24,7 +24,6 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
-/** World clock and simple date arithmetic. */
 class TimeSearchProvider(
     private val now: () -> ZonedDateTime = { ZonedDateTime.now() },
 ) : SnapshotSearchProvider() {
@@ -66,7 +65,6 @@ class TimeSearchProvider(
         )
     }
 
-    /** "+4h from you" — the difference is usually the reason for asking. */
     private fun offsetSuffix(here: ZonedDateTime, there: ZonedDateTime): String {
         val minutes = Duration.between(
             here.toLocalDateTime(),

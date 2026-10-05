@@ -22,8 +22,6 @@ data class NotesState(val notes: List<Note> = emptyList()) : MviState {
 
 sealed interface NotesEffect : MviEffect
 
-// --- Editor ---------------------------------------------------------------------------
-
 sealed interface NoteEditorIntent : MviIntent {
     data class TitleChanged(val value: String) : NoteEditorIntent
     data class BodyChanged(val value: String) : NoteEditorIntent

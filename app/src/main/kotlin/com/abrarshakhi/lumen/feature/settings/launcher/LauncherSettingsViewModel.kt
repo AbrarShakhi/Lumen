@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.asStateFlow
 data class LauncherSettingsState(
     val isOffered: Boolean = false,
     val isCurrentHome: Boolean = false,
-    /** True once Lumen holds the home role, which is the only way to read app shortcuts. */
     val shortcutsAvailable: Boolean = false,
 )
 

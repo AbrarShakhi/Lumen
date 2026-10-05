@@ -5,14 +5,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 
-/**
- * Cached exchange rates.
- *
- * Stale-while-revalidate: a cached table is served immediately even past its TTL, and a
- * refresh happens alongside. Reference rates move by fractions of a percent in a day, so
- * showing yesterday's number instantly beats showing a spinner — and showing nothing at all
- * when the device is offline would be worse still.
- */
 class CurrencyRatesRepository(
     private val client: ExchangeRatesClient,
     private val ttl: Duration = DEFAULT_TTL,
@@ -26,7 +18,6 @@ class CurrencyRatesRepository(
 
     data class Rates(val table: RateTable, val isStale: Boolean)
 
-    /** Whatever is cached, without touching the network. Used to paint an instant answer. */
     suspend fun cachedRates(base: String): Rates? = lock.withLock {
         cache[base]?.let { entry ->
             Rates(entry.table, isStale = (now() - entry.fetchedAtMillis) >= ttl.inWholeMilliseconds)
@@ -45,7 +36,6 @@ class CurrencyRatesRepository(
             return Rates(fetched, isStale = false)
         }
 
-        // Network failed. A stale answer, clearly marked, is more useful than none.
         return cached?.let { Rates(it.table, isStale = true) }
     }
 

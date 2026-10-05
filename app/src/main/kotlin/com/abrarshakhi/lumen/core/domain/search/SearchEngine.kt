@@ -21,20 +21,6 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.scan
 import kotlin.time.Duration
 
-/**
- * Merges every eligible provider's results for the current query.
- *
- * The two properties that make search feel instant rather than form-like:
- *
- *  - **`flatMapLatest`** means a new keystroke structurally cancels every in-flight
- *    provider. Providers get cancellation for free and never need to check for staleness.
- *  - **`scan`** means results render as they arrive. Apps land in a few milliseconds and
- *    paint immediately; a network-backed answer joins the same list a second later. The
- *    user never waits on the slowest provider to see the fastest one's results.
- *
- * This class must not need modification when a provider is added — if it ever does, the
- * [SearchProvider] abstraction is wrong.
- */
 class SearchEngine(
     private val registry: SearchProviderRegistry,
     private val ranker: ResultRanker,
@@ -68,22 +54,11 @@ class SearchEngine(
             }
             .distinctUntilChanged()
 
-    /**
-     * Wraps one provider with the policy it declared: debounce, timeout, failure isolation.
-     *
-     * Debounce is a plain `delay` inside the child coroutine rather than `Flow.debounce`.
-     * A global debounce before `flatMapLatest` would make local providers feel laggy just
-     * to protect a network one, and `Flow.debounce` applied afterwards does nothing here
-     * because a single-query flow completes immediately, flushing the pending value. A
-     * `delay` in the child is cancelled by the next keystroke, which is exactly the
-     * per-provider behaviour wanted.
-     */
     private fun SearchProvider.pipeline(query: SearchQuery): Flow<ProviderEvent> = flow {
         if (metadata.debounce > Duration.ZERO) delay(metadata.debounce)
         emitAll(
             search(query)
                 .takeUntilTimeout(metadata.timeout)
-                // One failing provider degrades its own section; it never fails the search.
                 .catch { cause ->
                     if (cause is CancellationException) throw cause
                     emit(ProviderResults.failed(id, cause))
@@ -91,24 +66,13 @@ class SearchEngine(
                 .map<ProviderResults, ProviderEvent> { ProviderEvent.Emitted(it) },
         )
     }
-        // Completion is tracked explicitly rather than inferred from the last emission.
-        // A provider killed by its timeout completes without ever emitting, and inferring
-        // "done" from emissions alone would leave it pending forever — a spinner that
-        // never stops.
         .onCompletion { cause -> if (cause == null) emit(ProviderEvent.Finished(id)) }
 
-    /** Internal envelope so the accumulator can distinguish results from stream completion. */
     private sealed interface ProviderEvent {
         data class Emitted(val results: ProviderResults) : ProviderEvent
         data class Finished(val providerId: ProviderId) : ProviderEvent
     }
 
-    /**
-     * Accumulates emissions per provider for one query.
-     *
-     * Keyed by provider so a streaming provider's later emission replaces its earlier one
-     * rather than appending duplicates.
-     */
     private data class Accumulator(
         val query: SearchQuery,
         val byProvider: Map<ProviderId, ProviderResults>,
@@ -117,8 +81,6 @@ class SearchEngine(
     ) {
         fun with(event: ProviderEvent): Accumulator = when (event) {
             is ProviderEvent.Emitted -> copy(
-                // Keyed by provider so a streaming provider's later emission replaces its
-                // earlier one rather than appending duplicates.
                 byProvider = byProvider + (event.results.providerId to event.results),
             )
 
@@ -149,12 +111,6 @@ class SearchEngine(
     }
 }
 
-/**
- * A rendered snapshot of the search, possibly still filling in.
- *
- * [pendingProviders] is derived by the engine — providers never report their own state —
- * and is what the UI uses to decide whether to show progress.
- */
 data class SearchResults(
     val query: SearchQuery,
     val sections: List<ResultSection>,
@@ -165,7 +121,6 @@ data class SearchResults(
     val isEmpty: Boolean get() = sections.isEmpty() && permissionRequests.isEmpty()
     val isSettled: Boolean get() = pendingProviders.isEmpty()
 
-    /** Flattened in display order — used for "activate the first result" on the IME key. */
     val flatResults: List<SearchResult> get() = sections.flatMap { it.results }
 
     companion object {

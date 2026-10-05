@@ -14,8 +14,6 @@ class CalculatorTest {
     private fun assertEval(expected: Double, input: String, tolerance: Double = 1e-9) =
         assertEquals(expected, eval(input), tolerance, "for '$input'")
 
-    // --- Arithmetic and precedence ---------------------------------------------------------
-
     @Test
     fun `basic arithmetic`() {
         assertEval(4.0, "2 + 2")
@@ -33,7 +31,6 @@ class CalculatorTest {
     @Test
     fun `exponentiation binds tighter than multiplication and is right associative`() {
         assertEval(18.0, "2 * 3 ^ 2")
-        // 2^(3^2) = 2^9 = 512, not (2^3)^2 = 64.
         assertEval(512.0, "2 ^ 3 ^ 2")
     }
 
@@ -53,8 +50,6 @@ class CalculatorTest {
     fun `nested parentheses`() {
         assertEval(30.0, "((2 + 3) * (4 + 2))")
     }
-
-    // --- Input people actually type ---------------------------------------------------------
 
     @Test
     fun `alternative operator symbols are accepted`() {
@@ -81,8 +76,6 @@ class CalculatorTest {
         assertEval(4.0, "  2   +   2  ")
     }
 
-    // --- Percent ----------------------------------------------------------------------------
-
     @Test
     fun `postfix percent divides by a hundred`() {
         assertEval(0.15, "15%")
@@ -94,8 +87,6 @@ class CalculatorTest {
         assertEval(12.0, "15% of 80")
         assertEval(50.0, "50% of 100")
     }
-
-    // --- Functions and constants -------------------------------------------------------------
 
     @Test
     fun `functions work with and without parentheses`() {
@@ -109,7 +100,6 @@ class CalculatorTest {
     fun `constants are available`() {
         assertEval(PI, "pi")
         assertEval(2 * PI, "tau")
-        // `e` is declined on its own (see below) but works wherever intent is unambiguous.
         assertEval(1.0, "ln(e)")
         assertEval(Math.E * 2, "e * 2")
     }
@@ -120,20 +110,15 @@ class CalculatorTest {
         assertEval(5.0, "sqrt(9 + 16)")
     }
 
-    // --- Non-expressions and errors ----------------------------------------------------------
-
     @Test
     fun `a bare number is not a calculation`() {
-        // Echoing "42 = 42" back at the user is noise, not an answer.
         assertNull(Calculator.evaluate("42"))
         assertNull(Calculator.evaluate("3.14"))
-        // A signed literal is still just a number.
         assertNull(Calculator.evaluate("-5"))
     }
 
     @Test
     fun `a lone single letter is not a constant lookup`() {
-        // "e" while typing an app name must not turn into 2.718.
         assertNull(Calculator.evaluate("e"))
         assertEval(kotlin.math.PI, "pi")
     }
@@ -148,7 +133,6 @@ class CalculatorTest {
 
     @Test
     fun `division by zero is an error, not infinity`() {
-        // Returning ∞ would look like the calculation had succeeded.
         assertNull(Calculator.evaluate("1 / 0"))
         assertNull(Calculator.evaluate("5 / (3 - 3)"))
     }
@@ -169,7 +153,6 @@ class CalculatorTest {
 
     @Test
     fun `an app name that looks vaguely mathematical is not hijacked`() {
-        // The calculator must not claim queries meant for other providers.
         assertNull(Calculator.evaluate("x"))
         assertNull(Calculator.evaluate("notes"))
     }

@@ -9,13 +9,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
-/**
- * Calendar search over a window around today.
- *
- * Queries `Instances` rather than `Events`: the Instances table has recurrences already
- * expanded, so a weekly stand-up returns the *next* occurrence with real dates instead of
- * one row carrying an RRULE that would have to be interpreted here.
- */
 class CalendarDataSource(
     private val context: Context,
     private val now: () -> Long = System::currentTimeMillis,
@@ -51,8 +44,6 @@ class CalendarDataSource(
             CalendarContract.Instances.CALENDAR_DISPLAY_NAME,
         )
 
-        // Filtered in the query so the provider does not pull every event across the window
-        // over Binder just to discard most of them.
         val selection = "${CalendarContract.Instances.TITLE} LIKE ? ESCAPE '\\'"
         val selectionArgs = arrayOf("%${term.escapeForLike()}%")
 
@@ -98,14 +89,12 @@ class CalendarDataSource(
         return results
     }
 
-    /** See the file-search data source: LIKE wildcards must be escaped, with ESCAPE declared. */
     private fun String.escapeForLike(): String =
         replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 
     private companion object {
         const val MIN_TERM_LENGTH = 2
 
-        /** Recently-past events are still worth finding — "what was that meeting called?" */
         const val PAST_WINDOW_DAYS = 14L
         const val FUTURE_WINDOW_DAYS = 180L
     }

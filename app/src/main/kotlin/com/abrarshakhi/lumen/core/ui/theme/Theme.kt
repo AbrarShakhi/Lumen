@@ -14,12 +14,6 @@ import androidx.compose.ui.platform.LocalContext
 import com.abrarshakhi.lumen.core.domain.preferences.ThemeMode
 import com.abrarshakhi.lumen.core.domain.preferences.UserPreferences
 
-/**
- * Lumen's Material 3 theme, driven entirely by user preferences.
- *
- * Takes [UserPreferences] as a parameter rather than reading a repository itself, so it
- * stays previewable and testable without DI.
- */
 @Composable
 fun LumenTheme(
     preferences: UserPreferences = UserPreferences.Default,

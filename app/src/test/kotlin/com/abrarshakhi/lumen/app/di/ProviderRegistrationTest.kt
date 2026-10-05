@@ -18,14 +18,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * Guards the mechanism that makes providers pluggable.
- *
- * Koin has no Dagger-style multibinding, so the registry collects providers with
- * `getAll<SearchProvider>()`. If that ever stops seeing definitions registered under a
- * `bind`, every provider silently disappears and search returns nothing — a failure that
- * looks like "no results" rather than an error. This test turns that into a build failure.
- */
 class ProviderRegistrationTest {
 
     private class StubProvider(name: String, order: Int) : SearchProvider {
@@ -64,8 +56,6 @@ class ProviderRegistrationTest {
 
     @Test
     fun `a provider registered without bind is invisible to getAll`() {
-        // Documents the failure mode: forgetting `bind` is silent, which is exactly why
-        // the test above exists.
         val koin = startKoin {
             modules(module { single { StubProvider("apps", 10) } })
         }.koin

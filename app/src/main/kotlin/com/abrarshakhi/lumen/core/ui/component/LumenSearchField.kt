@@ -38,14 +38,6 @@ import androidx.compose.material.icons.filled.Tune
 import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.ui.theme.SearchFieldTextStyle
 
-/**
- * The query field.
- *
- * Takes a [TextFieldState] from the caller rather than a `value`/`onValueChange` pair: the
- * text buffer belongs to the UI, not to screen state. Round-tripping every keystroke out to
- * a ViewModel and back is the classic cause of cursor jumps and broken IME composition, and
- * it puts a state-flow hop on the hottest path in the app.
- */
 @Composable
 fun LumenSearchField(
     state: TextFieldState,
@@ -76,8 +68,6 @@ fun LumenSearchField(
 
         Spacer(Modifier.width(12.dp))
 
-        // Judged on trimmed text: whitespace alone is not a query, so the field should
-        // still read as empty rather than showing a clear button over a blank-looking field.
         val hasQuery = state.text.isNotBlank()
 
         Box(Modifier.weight(1f), contentAlignment = Alignment.CenterStart) {
@@ -86,8 +76,6 @@ fun LumenSearchField(
                     text = stringResource(R.string.search_hint),
                     style = SearchFieldTextStyle,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    // The field itself is single-line; a wrapping hint would make the
-                    // panel taller than the field it is standing in for.
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
@@ -110,9 +98,6 @@ fun LumenSearchField(
             )
         }
 
-        // One trailing slot, two jobs: clearing is only meaningful with a query, and
-        // settings is only reachable before one is typed. Showing both would crowd the
-        // field for no gain.
         when {
             hasQuery -> IconButton(onClick = onClear) {
                 Icon(

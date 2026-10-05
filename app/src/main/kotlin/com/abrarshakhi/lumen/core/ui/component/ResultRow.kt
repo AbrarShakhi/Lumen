@@ -30,15 +30,8 @@ import com.abrarshakhi.lumen.core.domain.search.SearchResult
 import com.abrarshakhi.lumen.core.domain.search.TrailingContent
 import com.abrarshakhi.lumen.core.ui.text.resolve
 
-/** How many secondary actions appear inline before the rest move to the long-press sheet. */
 private const val MAX_INLINE_ACTIONS = 2
 
-/**
- * One result.
- *
- * Renders any result from any provider: everything provider-specific arrives inside
- * [SearchResult] itself, so this composable never grows a branch per provider.
- */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ResultRow(
@@ -123,12 +116,6 @@ private fun TrailingSlot(trailing: TrailingContent) {
     }
 }
 
-/**
- * Bolds the characters the query matched.
- *
- * The ranges come from the matcher, so highlighting always reflects why the result was
- * returned rather than a second, independent substring search.
- */
 @Composable
 private fun SearchResult.highlightedTitle(): AnnotatedString {
     val emphasis = MaterialTheme.colorScheme.primary

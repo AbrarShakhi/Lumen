@@ -27,12 +27,6 @@ class LumenApp : Application() {
         warmUpProviders()
     }
 
-    /**
-     * Builds each provider's index off the main thread before the user types.
-     *
-     * Failures are swallowed per provider: a provider that cannot warm up should degrade
-     * to empty results, never prevent the app from starting.
-     */
     private fun warmUpProviders() {
         val scope = get<CoroutineScope>(ApplicationScopeQualifier)
         val registry = get<SearchProviderRegistry>()

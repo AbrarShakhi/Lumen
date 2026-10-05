@@ -24,16 +24,6 @@ import com.abrarshakhi.lumen.core.domain.search.SnapshotSearchProvider
 import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Searches installed apps.
- *
- * The reference implementation every later provider copies: it declares its metadata,
- * matches against an in-memory index, and returns results carrying their own actions. It
- * holds no `Context`, requests no permissions, and knows nothing about the search engine.
- *
- * Zero debounce on purpose — this is a purely local, in-memory match, so results should
- * appear on the same frame as the keystroke that produced them.
- */
 class AppsSearchProvider(
     private val index: AppIndexRepository,
     private val shortcuts: AppShortcutRepository,
@@ -45,8 +35,6 @@ class AppsSearchProvider(
         displayName = TextValue.Res(R.string.provider_apps),
         category = ResultCategory.App,
         order = 10,
-        // Shortcuts need the home role, but plain app search does not — so this is
-        // optional: without it the provider still works, just without shortcut results.
         optionalCapabilities = listOf(PlatformCapability.DefaultLauncher),
         timeout = 250.milliseconds,
         debounce = kotlin.time.Duration.ZERO,
@@ -55,7 +43,6 @@ class AppsSearchProvider(
 
     override suspend fun warmUp() {
         index.refresh()
-        // Returns empty unless Lumen is the launcher; harmless either way.
         shortcuts.shortcuts()
     }
 
@@ -71,8 +58,6 @@ class AppsSearchProvider(
             .sortedByDescending { it.score }
             .take(MAX_RESULTS)
 
-        // Scored slightly below apps so "chrome" still surfaces the app above one of its
-        // shortcuts; empty unless Lumen holds the home role.
         val shortcutResults = shortcuts.shortcuts()
             .mapNotNull { shortcut ->
                 val match = FuzzyMatcher.score(terms, shortcut.searchable) ?: return@mapNotNull null
@@ -145,7 +130,6 @@ class AppsSearchProvider(
     )
 
     private companion object {
-        /** Trimmed again by the ranker's section cap; this just bounds the work. */
         const val MAX_RESULTS = 24
         const val MAX_SHORTCUTS = 6
         const val SHORTCUT_WEIGHT = 0.9f

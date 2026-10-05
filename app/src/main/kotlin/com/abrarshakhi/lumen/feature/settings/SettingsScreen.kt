@@ -29,12 +29,6 @@ import com.abrarshakhi.lumen.core.ui.component.SettingsSliderRow
 import com.abrarshakhi.lumen.core.ui.component.SettingsSwitchRow
 import kotlin.math.roundToInt
 
-/**
- * Stateless settings screen.
- *
- * Owns its own Scaffold: Lumen has no shared chrome layer, because the full-bleed search
- * surface and an ordinary settings list have nothing to share.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
@@ -96,8 +90,6 @@ fun SettingsScreen(
                         (preferences.fontScale * 100).roundToInt(),
                     ),
                     range = UserPreferences.MIN_FONT_SCALE..UserPreferences.MAX_FONT_SCALE,
-                    // Discrete stops keep the scale to sensible 5% increments and make the
-                    // control reachable with a screen reader.
                     steps = FONT_SCALE_STEPS,
                     onValueChange = { onIntent(SettingsIntent.FontScaleSet(it)) },
                 )
@@ -136,12 +128,6 @@ fun SettingsScreen(
     }
 }
 
-/**
- * Number of intermediate stops on the font-size slider.
- *
- * The range spans 0.85..1.30 and 5% increments give ten positions, so nine sit between the
- * two ends.
- */
 private const val FONT_SCALE_STEPS = 8
 
 private fun ThemeMode.labelRes(): Int = when (this) {

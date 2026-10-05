@@ -19,11 +19,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-/**
- * Pins the wire contract and the failure mapping, with `MockEngine` standing in for the
- * service. This is where an AI integration actually breaks — a changed response shape or an
- * unhandled status code — and none of it needs a real API key.
- */
 class GeminiBackendTest {
 
     private fun backend(engine: MockEngine) = GeminiBackend(
@@ -82,9 +77,6 @@ class GeminiBackendTest {
 
     @Test
     fun `a denied project is not reported as a bad key`() = runTest {
-        // Observed against a real key: 403 PERMISSION_DENIED means the key is fine but its
-        // Google project is not allowed. Calling that "invalid key" sends the user off to
-        // regenerate a perfectly good one.
         val answer = backend(MockEngine { respondError(HttpStatusCode.Forbidden) }).answer("q", "good-key")
 
         assertEquals(AiFailure.AccessDenied, assertIs<AiAnswer.Failed>(answer).reason)
@@ -92,8 +84,6 @@ class GeminiBackendTest {
 
     @Test
     fun `a retired model is not reported as a bad key either`() = runTest {
-        // Also observed for real: a 404 naming a replacement model. Reporting that as a key
-        // problem would be actively misleading.
         val answer = backend(MockEngine { respondError(HttpStatusCode.NotFound) }).answer("q", "good-key")
 
         assertEquals(AiFailure.Unknown, assertIs<AiAnswer.Failed>(answer).reason)
@@ -108,8 +98,6 @@ class GeminiBackendTest {
 
     @Test
     fun `a server error is not mistaken for a bad key`() = runTest {
-        // Telling someone their key is wrong when the service is down sends them to
-        // regenerate a perfectly good key.
         val answer = backend(MockEngine { respondError(HttpStatusCode.InternalServerError) }).answer("q", "key")
 
         assertEquals(AiFailure.Unknown, assertIs<AiAnswer.Failed>(answer).reason)
@@ -124,7 +112,6 @@ class GeminiBackendTest {
 
     @Test
     fun `unknown response fields do not break parsing`() = runTest {
-        // Providers add fields without warning; failing on one Lumen ignores would be brittle.
         val body = """{"modelVersion":"x","usageMetadata":{"totalTokenCount":9},
             "candidates":[{"finishReason":"STOP","content":{"parts":[{"text":"ok"}]}}]}"""
 

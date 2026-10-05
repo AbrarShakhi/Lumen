@@ -26,11 +26,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-/**
- * The providers screen's job is to say, accurately, why a source is not working — and the
- * distinction between "not yet granted" and "permanently denied" matters, because only one
- * of them can be fixed with a dialog.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class ProvidersViewModelTest {
 
@@ -122,8 +117,6 @@ class ProvidersViewModelTest {
 
     @Test
     fun `a permanently denied permission is reported as blocked, not missing`() = runTest {
-        // Showing a request prompt here would do nothing at all, so the UI has to send the
-        // user to system settings instead.
         val viewModel = ProvidersViewModel(
             registry(FakeProvider("contacts", 10, listOf(AppPermission.ReadContacts))),
             FakePermissions(blocked = setOf(AppPermission.ReadContacts)),
@@ -136,8 +129,6 @@ class ProvidersViewModelTest {
 
     @Test
     fun `permissions outside this device's sdk range are ignored`() = runTest {
-        // On API 31 the granular media permissions do not exist, so a file provider that
-        // declares all of them must not be reported as missing the 33+ ones.
         val viewModel = ProvidersViewModel(
             registry(
                 FakeProvider(
@@ -178,8 +169,6 @@ class ProvidersViewModelTest {
 
     @Test
     fun `providers appear in metadata order, not registration order`() = runTest {
-        // Uses the real registry, because ordering is its responsibility — the fake above
-        // deliberately preserves insertion order and would make this assertion vacuous.
         val viewModel = ProvidersViewModel(
             DefaultSearchProviderRegistry(
                 listOf(FakeProvider("web", order = 90), FakeProvider("apps", order = 10)),

@@ -28,16 +28,6 @@ import kotlinx.coroutines.flow.flow
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Answers a question with an AI model, on request.
- *
- * Only runs behind an explicit `ai ` prefix. Sending every keystroke to a paid API the user
- * did not ask to call would be both expensive and a privacy problem — the prefix makes the
- * network call something the user opts into per query, the same way `ggl` routes to Google.
- *
- * Streaming in the [SearchProvider.search] sense: it emits a pending row immediately so the
- * user can see the request was accepted, then replaces it with the answer.
- */
 class AiAnswerProvider(
     private val backend: AiBackend,
     private val secrets: SecretStore,
@@ -50,10 +40,7 @@ class AiAnswerProvider(
         displayName = TextValue.Res(R.string.provider_ai),
         category = ResultCategory.Answer,
         order = 5,
-        // Long enough for a model to think; the pending row is on screen throughout.
         timeout = 40.seconds,
-        // No debounce needed: nothing is sent until the query is submitted with the prefix,
-        // and the prefix check is free.
         debounce = Duration.ZERO,
         minQueryLength = MIN_PREFIXED_LENGTH,
         defaultEnabled = true,
@@ -68,15 +55,12 @@ class AiAnswerProvider(
             return@flow
         }
 
-        // Acknowledge immediately; a request that takes seconds with no feedback reads as
-        // nothing having happened.
         emit(ProviderResults(id, listOf(pendingResult(prompt)), isPartial = true))
 
         val answer = backend.answer(prompt, apiKey)
         emit(ProviderResults(id, listOf(answerResult(prompt, answer))))
     }
 
-    /** Returns the question after the `ai ` prefix, or null when it is not an AI query. */
     private fun String.aiPrompt(): String? {
         val trimmed = trim()
         val prefix = PREFIXES.firstOrNull { trimmed.startsWith("$it ", ignoreCase = true) }
@@ -99,7 +83,6 @@ class AiAnswerProvider(
         subtitle = backend.displayName,
         trailing = null,
         expanded = null,
-        // The useful thing to offer is the screen where a key is entered.
         action = ResultAction(
             id = "configure",
             label = TextValue.Res(R.string.ai_add_key),
@@ -134,8 +117,6 @@ class AiAnswerProvider(
             subtitle = backend.displayName,
             trailing = null,
             expanded = null,
-            // Offering "Add key" only helps when the key is the problem; for an
-            // account-level denial it would send the user in the wrong direction.
             action = if (answer.reason == AiFailure.InvalidKey || answer.reason == AiFailure.MissingKey) {
                 ResultAction(
                     id = "configure",
@@ -179,7 +160,6 @@ class AiAnswerProvider(
             ),
         ),
     )
-
 
     private companion object {
         val PREFIXES = listOf("ai", "ask")

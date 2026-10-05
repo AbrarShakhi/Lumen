@@ -7,7 +7,6 @@ class NumberFormattingTest {
 
     @Test
     fun `floating point noise is hidden`() {
-        // The whole reason this class exists: 0.1 + 0.2 must not print as 0.30000000000000004.
         assertEquals("0.3", NumberFormatting.format(0.1 + 0.2))
         assertEquals("3", NumberFormatting.format(2.9999999999999996))
     }
@@ -27,13 +26,11 @@ class NumberFormattingTest {
 
     @Test
     fun `four digit numbers are left ungrouped`() {
-        // Years and small counts read better without a separator.
         assertEquals("2026", NumberFormatting.format(2026.0))
     }
 
     @Test
     fun `answers are capped at six decimal places`() {
-        // 20cm in inches is exactly 7.87401574803…; showing all of it is unreadable.
         assertEquals("7.874016", NumberFormatting.format(7.874015748031496))
         assertEquals("0.333333", NumberFormatting.format(1.0 / 3.0))
     }

@@ -17,12 +17,10 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
-/** Qualifier for the application-lifetime coroutine scope. */
 val ApplicationScopeQualifier = named("applicationScope")
 
 val dataModule = module {
 
-    // SupervisorJob so one failing collector cannot tear down every app-scoped flow.
     single<CoroutineScope>(ApplicationScopeQualifier) {
         CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
@@ -38,7 +36,6 @@ val dataModule = module {
         )
     }
 
-    // One shared client: each one owns a connection pool and dispatcher.
     single { HttpClientFactory.create() }
 
     single<SecretStore> {

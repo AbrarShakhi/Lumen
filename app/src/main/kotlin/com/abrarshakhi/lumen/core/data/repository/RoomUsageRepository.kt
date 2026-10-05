@@ -11,12 +11,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-/**
- * Usage statistics backed by Room, projected into an in-memory snapshot.
- *
- * The projection is the point: the table is read once and kept hot as a [StateFlow], so
- * ranking stays a pure synchronous function with no I/O on the keystroke path.
- */
 class RoomUsageRepository(
     private val dao: UsageStatDao,
     scope: CoroutineScope,

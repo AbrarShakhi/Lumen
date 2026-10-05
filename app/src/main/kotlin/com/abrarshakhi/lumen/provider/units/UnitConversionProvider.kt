@@ -20,7 +20,6 @@ import com.abrarshakhi.lumen.core.domain.util.NumberFormatting
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/** Converts between units typed inline, e.g. `20cm in inches`. */
 class UnitConversionProvider : SnapshotSearchProvider() {
 
     override val id = ProviderId("units")
@@ -31,7 +30,6 @@ class UnitConversionProvider : SnapshotSearchProvider() {
         order = 2,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,
-        // "5 m in ft" is the shortest meaningful conversion.
         minQueryLength = 6,
     )
 
@@ -51,8 +49,6 @@ class UnitConversionProvider : SnapshotSearchProvider() {
                 icon = IconSource.Vector(LumenIcon.Convert),
                 category = ResultCategory.Answer,
                 score = 1f,
-                // Conversions are one-off; a per-query ranking key would learn nothing, so
-                // usage accrues against the dimension pair instead.
                 rankingKey = "units:${conversion.from.id}:${conversion.to.id}",
                 trailing = TrailingContent.Text(conversion.to.symbol),
                 triggerable = false,

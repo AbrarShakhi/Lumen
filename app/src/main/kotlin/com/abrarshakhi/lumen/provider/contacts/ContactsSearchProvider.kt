@@ -26,17 +26,6 @@ import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Searches the device's contacts.
- *
- * Note what this class does *not* contain: any permission check, any `Context`, any
- * knowledge of the search engine. It declares `READ_CONTACTS` in its metadata and the gate
- * does the rest — which is why adding it required no change to the engine, the ViewModel,
- * or the search screen.
- *
- * A small debounce, unlike the apps provider: the first query after permission is granted
- * hits the ContentResolver, so it is worth not firing that on every keystroke.
- */
 class ContactsSearchProvider(
     private val contacts: ContactRepository,
     private val installedApps: InstalledAppsProbe,
@@ -51,13 +40,10 @@ class ContactsSearchProvider(
         requiredPermissions = listOf(AppPermission.ReadContacts),
         timeout = 600.milliseconds,
         debounce = 80.milliseconds,
-        // Single letters match far too many people to be useful.
         minQueryLength = 2,
     )
 
     override suspend fun warmUp() {
-        // Only pre-loads if permission already happens to be granted; otherwise the query
-        // returns nothing and the first real search loads it.
         contacts.contacts()
     }
 
@@ -91,7 +77,6 @@ class ContactsSearchProvider(
         )
     }
 
-    /** Shows the number, plus a hint when there are others behind the long-press sheet. */
     private fun Contact.formatSubtitle(number: PhoneNumber): String {
         val base = listOfNotNull(number.label, number.number).joinToString(" · ")
         val extra = phoneNumbers.size - 1
@@ -100,7 +85,6 @@ class ContactsSearchProvider(
 
     private fun Contact.buildActions(number: PhoneNumber?): ResultActions {
         if (number == null) {
-            // A contact with no number can still be opened in the contacts app.
             return ResultActions(primary = openContactAction())
         }
 
@@ -110,8 +94,6 @@ class ContactsSearchProvider(
                 ResultAction(
                     id = "chat-${app.name.lowercase()}",
                     label = TextValue.Raw(app.displayName),
-                    // Distinct from SMS: two identical icons sitting side by side in a row
-                    // tells the user nothing about which is which.
                     icon = IconSource.Vector(LumenIcon.Chat),
                     kind = ActionKind.Message,
                     invoke = {
@@ -121,8 +103,6 @@ class ContactsSearchProvider(
             }
 
         return ResultActions(
-            // Dial rather than Call: it opens the dialer pre-filled instead of placing the
-            // call immediately, so a mistap is recoverable and no CALL_PHONE grant is needed.
             primary = ResultAction(
                 id = ACTION_DIAL,
                 label = TextValue.Res(R.string.action_call),

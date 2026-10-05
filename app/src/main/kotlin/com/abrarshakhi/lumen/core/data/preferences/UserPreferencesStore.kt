@@ -20,15 +20,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-/**
- * Typed settings persisted as JSON via DataStore.
- *
- * JSON rather than Proto: Proto is the textbook choice, but it would add the protobuf
- * Gradle plugin and `.proto` codegen to a brand-new AGP 9 build for no benefit over a
- * `@Serializable` class, given kotlinx-serialization is already applied for Navigation 3.
- * Preferences DataStore was rejected for the opposite reason — no type safety, and
- * defaults scattered across every read site.
- */
 internal class UserPreferencesSerializer(
     private val json: Json,
 ) : Serializer<UserPreferencesDto> {
@@ -42,7 +33,6 @@ internal class UserPreferencesSerializer(
                 input.readBytes().decodeToString(),
             )
         } catch (cause: SerializationException) {
-            // Signals DataStore to invoke the corruption handler rather than crash.
             throw CorruptionException("Settings file is unreadable", cause)
         }
 
@@ -51,14 +41,6 @@ internal class UserPreferencesSerializer(
     }
 }
 
-/**
- * App-scoped settings holder.
- *
- * Exposed as a [StateFlow] and injected as a singleton, read directly by composables that
- * need it. Deliberately *not* fronted by a ViewModel: theme and font scale are app-wide,
- * outlive any one screen, and routing them through a screen ViewModel is how a
- * "MainViewModel" grows into a god object.
- */
 class DataStoreUserPreferencesRepository(
     context: Context,
     private val scope: CoroutineScope,
@@ -67,7 +49,6 @@ class DataStoreUserPreferencesRepository(
 
     private val dataStore: DataStore<UserPreferencesDto> = DataStoreFactory.create(
         serializer = UserPreferencesSerializer(json),
-        // A corrupt settings file must never brick the launcher; fall back to defaults.
         corruptionHandler = ReplaceFileCorruptionHandler { UserPreferencesDto() },
         scope = scope,
         produceFile = { File(context.filesDir, "datastore/$FILE_NAME") },

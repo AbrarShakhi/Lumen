@@ -1,17 +1,5 @@
 package com.abrarshakhi.lumen.core.domain.match
 
-/**
- * Ranks how well a query matches a candidate string.
- *
- * A tiered, bonus-based matcher in the spirit of fzf, rather than edit distance over the
- * whole candidate list. Edit distance would rank `"Chrome"` and `"Chromecast"` almost
- * identically for the query `"chrome"`, and is far too slow to run per keystroke over
- * every installed app. Instead each tier below is both cheaper and more discriminating
- * than the next, and the first one that matches wins.
- *
- * Typo tolerance is deliberately the *last* resort: it is the only tier that can produce
- * surprising matches, so it only runs when every structural tier has failed.
- */
 object FuzzyMatcher {
 
     private const val SCORE_EXACT = 1.0f
@@ -23,12 +11,6 @@ object FuzzyMatcher {
     private const val SCORE_SUBSEQUENCE_MIN = 0.30f
     private const val SCORE_TYPO = 0.25f
 
-    /**
-     * Returns null when [query] does not match [target] at all.
-     *
-     * [query] is expected to be normalized already — callers hold a
-     * [com.abrarshakhi.lumen.core.domain.search.SearchQuery] whose terms were normalized once.
-     */
     fun score(query: String, target: SearchableText): MatchScore? {
         if (query.isEmpty()) return MatchScore(SCORE_SUBSEQUENCE_MIN, emptyList())
         val candidate = target.normalized
@@ -45,7 +27,6 @@ object FuzzyMatcher {
 
         val substringAt = candidate.indexOf(query)
         if (substringAt >= 0) {
-            // Later matches are weaker: "book" in "Facebook" should rank below "Booking".
             val positionPenalty = (substringAt.toFloat() / candidate.length) * 0.15f
             return MatchScore(SCORE_SUBSTRING - positionPenalty, listOf(substringAt until substringAt + query.length))
         }
@@ -54,7 +35,6 @@ object FuzzyMatcher {
         return matchWithTypos(query, candidate)
     }
 
-    /** `"maps"` matches `"Google Maps"` at a word boundary. */
     private fun matchWordPrefix(query: String, target: SearchableText): MatchScore? {
         val candidate = target.normalized
         for (start in target.wordStarts) {
@@ -67,7 +47,6 @@ object FuzzyMatcher {
         return null
     }
 
-    /** `"gm"` matches `"Google Maps"`; `"gps"` matches `"Google Play Store"`. */
     private fun matchAcronym(query: String, target: SearchableText): MatchScore? {
         if (query.length < 2 || target.acronym.length < 2) return null
         if (!target.acronym.startsWith(query)) return null
@@ -76,12 +55,6 @@ object FuzzyMatcher {
         return MatchScore(SCORE_ACRONYM * (0.85f + 0.15f * completeness), ranges)
     }
 
-    /**
-     * Characters appear in order but not adjacently — `"gdocs"` matching `"Google Docs"`.
-     *
-     * Scored by how tightly packed the match is and how many matched characters landed on
-     * word boundaries, so a compact, boundary-aligned match outranks a scattered one.
-     */
     private fun matchSubsequence(query: String, target: SearchableText): MatchScore? {
         val candidate = target.normalized
         val wordStarts = target.wordStarts.toHashSet()
@@ -112,15 +85,9 @@ object FuzzyMatcher {
         return MatchScore(score.coerceIn(SCORE_SUBSEQUENCE_MIN, SCORE_SUBSEQUENCE_MAX), positions.toRanges())
     }
 
-    /**
-     * Last resort: bounded Damerau-Levenshtein, so `"chrmoe"` still finds `"chrome"`.
-     *
-     * The allowance scales with query length and is capped — an unbounded distance would
-     * match almost anything to almost anything.
-     */
     private fun matchWithTypos(query: String, candidate: String): MatchScore? {
         val allowance = when {
-            query.length <= 3 -> return null // too short to distinguish a typo from a different word
+            query.length <= 3 -> return null
             query.length <= 5 -> 1
             else -> 2
         }
@@ -133,7 +100,6 @@ object FuzzyMatcher {
         return MatchScore(SCORE_TYPO * (1f - penalty * 0.5f), listOf(0 until minOf(query.length, candidate.length)))
     }
 
-    /** Returns [limit] + 1 as soon as the distance is known to exceed [limit]. */
     private fun boundedDamerauLevenshtein(left: String, right: String, limit: Int): Int {
         if (kotlin.math.abs(left.length - right.length) > limit) return limit + 1
 
@@ -171,7 +137,6 @@ object FuzzyMatcher {
 
     private fun IntRange.toRange(): IntRange = this
 
-    /** Collapses sorted indices into contiguous ranges, so highlighting draws fewer spans. */
     private fun List<Int>.toRanges(): List<IntRange> {
         if (isEmpty()) return emptyList()
         val ranges = mutableListOf<IntRange>()

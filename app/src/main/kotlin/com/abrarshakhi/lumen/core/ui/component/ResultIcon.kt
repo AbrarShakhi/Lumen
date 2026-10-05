@@ -35,15 +35,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.abrarshakhi.lumen.core.domain.search.IconSource
 
-/** Standard size for a result row's leading icon. */
 val ResultIconSize: Dp = 42.dp
 
-/**
- * Renders any [IconSource].
- *
- * A single renderer for a closed set of icon shapes, so adding a provider never means
- * touching icon rendering — the provider just names a shape.
- */
 @Composable
 fun ResultIcon(
     source: IconSource,
@@ -111,7 +104,6 @@ private fun AppIcon(source: IconSource.App, modifier: Modifier, size: Dp) {
             modifier = modifier.size(size).clip(RoundedCornerShape(size * 0.22f)),
         )
     } else {
-        // Reserve the slot so rows never reflow when the icon resolves.
         Box(modifier.size(size))
     }
 }
@@ -134,13 +126,6 @@ private fun MonogramIcon(text: String, seedColorArgb: Int?, modifier: Modifier, 
     }
 }
 
-/**
- * An in-memory cache of rasterised app icons.
- *
- * Deliberately hand-rolled rather than pulling in an image-loading library: the source is
- * a local `Drawable`, not a network image, so there is no fetching, no disk cache and no
- * placeholder pipeline to justify the dependency.
- */
 private object AppIconCache {
 
     private const val ICON_PIXELS = 144

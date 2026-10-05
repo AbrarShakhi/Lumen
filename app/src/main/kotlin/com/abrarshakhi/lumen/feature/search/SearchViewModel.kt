@@ -13,13 +13,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/**
- * Drives the search surface.
- *
- * Depends on exactly three things and has never heard of any individual provider. Adding
- * contacts, files or AI answers does not change this class — that is the whole point of
- * routing everything through [SearchEngine].
- */
 class SearchViewModel(
     private val engine: SearchEngine,
     private val invoker: ResultActionInvoker,
@@ -30,7 +23,6 @@ class SearchViewModel(
     reducer = SearchReducer,
 ) {
 
-    /** The query stream the engine observes. Fed by the UI's text field. */
     private val queries = MutableStateFlow("")
 
     init {

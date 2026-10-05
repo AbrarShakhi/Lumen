@@ -28,13 +28,6 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.abrarshakhi.lumen.R
 
-/**
- * Where an AI API key is entered.
- *
- * The stored key is never read back into this screen — only whether one exists. Displaying
- * a secret that is already saved adds no value and creates a way for it to be shoulder-read
- * or captured in a screenshot.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AiSettingsScreen(
@@ -90,7 +83,6 @@ fun AiSettingsScreen(
                 label = { Text(stringResource(R.string.ai_key_label)) },
                 placeholder = { Text(stringResource(R.string.ai_key_hint)) },
                 singleLine = true,
-                // Masked: a key is a credential, not content.
                 visualTransformation = PasswordVisualTransformation(),
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
             )

@@ -20,13 +20,6 @@ data class NoteEntity(
     @ColumnInfo(name = "updated_at") val updatedAtMillis: Long,
 )
 
-/**
- * Full-text index over [NoteEntity].
- *
- * An external-content FTS table (`contentEntity`) rather than a duplicate copy of the text:
- * Room generates triggers that keep it in sync, so the note body is stored once and the
- * index cannot drift from it.
- */
 @Fts4(contentEntity = NoteEntity::class)
 @Entity(tableName = "notes_fts")
 data class NoteFtsEntity(
@@ -43,12 +36,6 @@ interface NoteDao {
     @Query("SELECT * FROM notes WHERE id = :id")
     suspend fun byId(id: Long): NoteEntity?
 
-    /**
-     * Full-text search, most recently edited first.
-     *
-     * Joins on `rowid` because that is how an external-content FTS table refers back to
-     * its source rows.
-     */
     @Query(
         """
         SELECT notes.* FROM notes

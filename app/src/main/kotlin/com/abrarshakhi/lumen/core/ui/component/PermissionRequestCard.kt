@@ -25,14 +25,6 @@ import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.ui.text.resolve
 import com.abrarshakhi.lumen.core.domain.search.PermissionRequest
 
-/**
- * Asks for a permission inline, where the missing results would have been.
- *
- * Prompting is deliberately part of the result list rather than a separate settings trip:
- * the user finds out that contacts are searchable at the moment they search for a person,
- * and can grant it without losing their query. Dismissing is remembered per source, so a
- * declined prompt does not keep reappearing on every keystroke.
- */
 @Composable
 fun PermissionRequestCard(
     request: PermissionRequest,

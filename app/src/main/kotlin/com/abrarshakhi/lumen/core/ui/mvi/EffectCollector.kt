@@ -9,13 +9,6 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import kotlinx.coroutines.flow.Flow
 
-/**
- * Collects one-shot effects only while the screen is at least STARTED.
- *
- * `repeatOnLifecycle` matters here: navigating or launching an activity from a backgrounded
- * composition throws or silently misfires. Pairing it with the ViewModel's buffered effect
- * channel means events raised while backgrounded are delivered on return rather than lost.
- */
 @Composable
 fun <E> Flow<E>.CollectEffects(onEffect: suspend (E) -> Unit) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle

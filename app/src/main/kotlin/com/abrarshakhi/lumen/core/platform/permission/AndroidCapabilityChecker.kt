@@ -8,13 +8,6 @@ import androidx.core.content.getSystemService
 import com.abrarshakhi.lumen.core.domain.permission.CapabilityChecker
 import com.abrarshakhi.lumen.core.domain.permission.PlatformCapability
 
-/**
- * Reports non-permission platform affordances.
- *
- * [PlatformCapability.DefaultLauncher] is checked via `hasShortcutHostPermission`, which is
- * the authoritative signal: Android grants shortcut access only to the current home-role
- * holder, and there is no partial fallback.
- */
 class AndroidCapabilityChecker(
     private val context: Context,
 ) : CapabilityChecker {
@@ -31,7 +24,6 @@ class AndroidCapabilityChecker(
                 ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
         }.getOrDefault(false)
 
-        // Populated once SAF tree grants are implemented (file search).
         PlatformCapability.DocumentTreeGrant -> false
     }
 }

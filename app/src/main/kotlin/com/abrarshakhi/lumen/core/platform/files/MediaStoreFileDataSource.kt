@@ -7,17 +7,6 @@ import com.abrarshakhi.lumen.core.domain.repository.FileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * File search backed by MediaStore.
- *
- * Filtering happens in the query rather than in Kotlin: MediaStore is a database, and
- * pulling every row across the Binder boundary to filter them here would be both slow and
- * memory-hungry on a device with thousands of files.
- *
- * Verified on the test device that `MediaStore.Files` returns documents as well as media —
- * OEM behaviour differs here, so a device that only indexes media will simply return fewer
- * results rather than failing.
- */
 class MediaStoreFileDataSource(
     private val context: Context,
 ) : FileRepository {
@@ -41,9 +30,6 @@ class MediaStoreFileDataSource(
             MediaStore.Files.FileColumns.RELATIVE_PATH,
         )
 
-        // A null MIME type means a directory row; those are not openable and would be noise.
-        // ESCAPE is required: SQLite treats a backslash as an ordinary character unless
-        // the query declares it, so escaping without this would match the backslash itself.
         val selection = "${MediaStore.Files.FileColumns.DISPLAY_NAME} LIKE ? ESCAPE '\\' " +
             "AND ${MediaStore.Files.FileColumns.MIME_TYPE} IS NOT NULL"
         val selectionArgs = arrayOf("%${term.escapeForLike()}%")
@@ -84,12 +70,6 @@ class MediaStoreFileDataSource(
         return results
     }
 
-    /**
-     * Escapes SQL LIKE wildcards.
-     *
-     * Without this, searching for a literal `%` or `_` would silently match everything —
-     * `_` is a single-character wildcard, which is easy to forget.
-     */
     private fun String.escapeForLike(): String =
         replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
 

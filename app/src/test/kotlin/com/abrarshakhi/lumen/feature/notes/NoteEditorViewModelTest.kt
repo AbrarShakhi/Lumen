@@ -45,8 +45,6 @@ class NoteEditorViewModelTest {
 
     @Test
     fun `opening an existing note does not rewrite it`() = runTest {
-        // Rewriting would bump updated_at and silently reorder the notes list just because
-        // the user looked at a note.
         val repository = FakeNotes()
         repository.save(null, "Shopping", "milk")
         val savesAfterSetup = repository.saveCount
@@ -97,7 +95,6 @@ class NoteEditorViewModelTest {
 
         assertEquals(0, repository.notes.size)
 
-        // A pending autosave must not resurrect what was just deleted.
         viewModel.dispatch(NoteEditorIntent.BodyChanged("resurrected"))
         advanceUntilIdle()
         assertEquals(0, repository.notes.size, "a deleted note must stay deleted")

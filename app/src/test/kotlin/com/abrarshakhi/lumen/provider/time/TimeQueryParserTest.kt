@@ -90,7 +90,6 @@ class TimeQueryParserTest {
 
     @Test
     fun `a bare city name is not a time query`() {
-        // "paris" should stay available to other providers rather than being claimed here.
         assertNull(TimeQueryParser.parse("paris", today))
     }
 }

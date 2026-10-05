@@ -21,12 +21,6 @@ import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Makes Lumen's own settings reachable from the search field.
- *
- * Uses [ActionOutcome.Navigate], so the destination is expressed as a domain concept and
- * mapped to a route in the app layer — the provider never imports a navigation type.
- */
 class LumenSettingsProvider(
     private val settings: LumenSettingsRepository,
 ) : SnapshotSearchProvider() {
@@ -70,7 +64,6 @@ class LumenSettingsProvider(
         }.sortedByDescending { it.score }
     }
 
-    /** Best score across the title and every keyword alias. */
     private fun LumenSettingEntry.matchAgainst(terms: String): Float? =
         (listOf(searchable) + keywords)
             .mapNotNull { FuzzyMatcher.score(terms, it) }

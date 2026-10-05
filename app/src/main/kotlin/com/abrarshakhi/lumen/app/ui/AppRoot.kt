@@ -32,18 +32,6 @@ import com.abrarshakhi.lumen.feature.settings.launcher.LauncherSettingsRoute
 import com.abrarshakhi.lumen.feature.settings.providers.ProvidersRoute
 import org.koin.compose.koinInject
 
-/**
- * The composition root.
- *
- * Owns exactly three things: the theme, the back stack, and the app-level snackbar. It
- * deliberately does *not* own a Scaffold shared across destinations — the search surface is
- * full-bleed with no top bar, while settings screens are ordinary lists, so a shared
- * chrome layer would be an abstraction serving neither. Each destination brings its own.
- *
- * App-wide preferences are read here from a singleton rather than a "main" ViewModel:
- * theme and font scale outlive every screen, and routing them through a screen-scoped
- * ViewModel is exactly how a god object starts.
- */
 @Composable
 fun AppRoot(
     startRoute: AppRouteKey,
@@ -63,15 +51,9 @@ fun AppRoot(
         Box(modifier.fillMaxSize()) {
             NavDisplay(
                 backStack = backStack,
-                // Back at the root closes Lumen rather than trapping the user on a
-                // surface they summoned — it behaves like a dismissible overlay.
                 onBack = { if (!backStack.popOrFalse()) onFinish() },
                 entryDecorators = listOf(
-                    // Scopes rememberSaveable state (scroll position, expanded rows) per
-                    // entry, so returning to a destination restores it rather than
-                    // inheriting the previous screen's.
                     rememberSaveableStateHolderNavEntryDecorator(),
-                    // Gives each entry its own ViewModelStore, cleared when it is popped.
                     rememberViewModelStoreNavEntryDecorator(),
                 ),
                 entryProvider = entryProvider {

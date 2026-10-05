@@ -20,13 +20,6 @@ sealed interface SettingsAction : MviAction {
     data class PreferencesLoaded(val preferences: UserPreferences) : SettingsAction
 }
 
-/**
- * Settings state is just the preferences.
- *
- * There is no separate "saving" flag: writes go to DataStore and come back through the same
- * preferences flow, so the switch the user just flipped reflects what was actually persisted
- * rather than an optimistic guess that could diverge from it.
- */
 @Immutable
 data class SettingsState(
     val preferences: UserPreferences = UserPreferences.Default,

@@ -23,13 +23,6 @@ import com.abrarshakhi.lumen.core.domain.text.TextValue
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Finds files on the device.
- *
- * Declares every storage permission it might need across SDK levels; the gate resolves
- * which ones actually apply to *this* device — `READ_EXTERNAL_STORAGE` below API 33, the
- * granular media permissions from 33. Hard-coding either set would break one of them.
- */
 class FilesSearchProvider(
     private val files: FileRepository,
 ) : SnapshotSearchProvider() {
@@ -47,7 +40,6 @@ class FilesSearchProvider(
             AppPermission.ReadMediaAudio,
         ),
         timeout = 2.seconds,
-        // Every query is a ContentResolver round trip, so it is worth not firing per keystroke.
         debounce = 150.milliseconds,
         minQueryLength = 2,
     )
@@ -62,8 +54,6 @@ class FilesSearchProvider(
         subtitle = listOfNotNull(folder, humanSize()).joinToString(" · ").takeIf { it.isNotBlank() },
         icon = IconSource.Vector(kind.icon()),
         category = ResultCategory.File,
-        // MediaStore ranks by recency rather than relevance, so results share one score and
-        // the query's own ordering decides.
         score = 0.75f,
         rankingKey = "file:$id",
         actions = ResultActions(
@@ -72,8 +62,6 @@ class FilesSearchProvider(
                 label = TextValue.Res(R.string.action_open),
                 icon = IconSource.Vector(LumenIcon.Open),
                 kind = ActionKind.Open,
-                // A content URI needs a read grant travelling with the intent, or the
-                // receiving app cannot open it.
                 invoke = { ActionOutcome.Launch(PlatformIntent.ViewDocument(uri, mimeType)) },
             ),
             secondary = listOf(

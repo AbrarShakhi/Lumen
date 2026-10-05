@@ -27,13 +27,6 @@ import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.ui.component.SettingsSwitchRow
 import org.koin.androidx.compose.koinViewModel
 
-/**
- * Launcher mode.
- *
- * Deliberately explicit about what this does. Replacing the home app is the most invasive
- * thing Lumen can do to a device, and ColorOS in particular can make handing the role back
- * fiddly — so the screen says plainly how to undo it before the user opts in.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LauncherSettingsRoute(
@@ -47,7 +40,6 @@ fun LauncherSettingsRoute(
         ActivityResultContracts.StartActivityForResult(),
     ) { viewModel.refresh() }
 
-    // The role can change in system settings while Lumen is backgrounded.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) { viewModel.refresh() }
 
     Scaffold(
@@ -86,8 +78,6 @@ fun LauncherSettingsRoute(
                     onClick = { viewModel.chooseHomeApp()?.let(chooser::launch) },
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
                 ) {
-                    // Different wording once Lumen holds the role: the same button then
-                    // exists to hand it back, not to take it.
                     Text(
                         stringResource(
                             if (state.isCurrentHome) R.string.launcher_change else R.string.launcher_choose,

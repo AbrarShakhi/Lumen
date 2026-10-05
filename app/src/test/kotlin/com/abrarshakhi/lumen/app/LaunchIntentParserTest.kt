@@ -6,11 +6,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/**
- * Navigation 3 does not parse deep links, so every entry point into Lumen — launcher icon,
- * assistant gesture, tile, widget, another app's search intent — resolves through this one
- * pure function. Keeping it pure is what makes all of it testable without an Activity.
- */
 class LaunchIntentParserTest {
 
     @Test

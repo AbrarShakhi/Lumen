@@ -36,8 +36,6 @@ fun NoteEditorScreen(
         modifier = modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
-                // Deliberately untitled: the note's own title field is directly below, and
-                // a second heading above it would just repeat what the user is typing.
                 title = {},
                 navigationIcon = {
                     IconButton(onClick = { onIntent(NoteEditorIntent.Closed) }) {
@@ -87,7 +85,6 @@ fun NoteEditorScreen(
     }
 }
 
-/** Removes the filled-field chrome so the editor reads as a page rather than a form. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun transparentFieldColours() = TextFieldDefaults.colors(

@@ -11,12 +11,6 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-/**
- * Lists every registered provider with its enabled and permission state.
- *
- * Reads from the registry rather than a hard-coded list, so a newly added provider appears
- * here automatically — the same property that keeps the search engine closed to modification.
- */
 class ProvidersViewModel(
     private val registry: SearchProviderRegistry,
     private val permissions: PermissionChecker,
@@ -47,7 +41,6 @@ class ProvidersViewModel(
                 when (val permission = setting.permission) {
                     is ProviderPermissionState.Missing ->
                         emitEffect(ProvidersEffect.RequestPermissions(permission.permissions))
-                    // A prompt would be dismissed instantly; system settings is the only route.
                     is ProviderPermissionState.Blocked ->
                         emitEffect(ProvidersEffect.OpenAppSettings)
                     else -> Unit
@@ -75,8 +68,6 @@ class ProvidersViewModel(
     }
 
     private fun SearchProvider.permissionState(): ProviderPermissionState {
-        // Only the permissions that apply to this device's SDK level are relevant; asking
-        // for the others would be asking for something the platform will never grant.
         val required = AppPermission.applicable(
             metadata.requiredPermissions,
             permissions.sdkInt,

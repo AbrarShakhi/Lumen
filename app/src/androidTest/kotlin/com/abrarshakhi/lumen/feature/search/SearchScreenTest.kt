@@ -33,13 +33,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/**
- * Tests the stateless screen with a fabricated state — no DI, no ViewModel, no engine.
- *
- * The panel dismissal cases exist because both were real bugs: a `clickable` scrim stole
- * focus from the search field (keyboard up, field dead), and the panel did not consume taps,
- * so touching the field closed the surface. Neither shows up in a unit test.
- */
 class SearchScreenTest {
 
     @get:Rule
@@ -90,14 +83,11 @@ class SearchScreenTest {
                     onIntent = onIntent,
                     presentation = presentation,
                     onDismiss = onDismiss,
-                    // The IME stealing focus makes touch injection flaky in tests.
                     autoFocus = false,
                 )
             }
         }
     }
-
-    // --- Fullscreen ---------------------------------------------------------------------
 
     @Test
     fun fullscreen_showsIdleMessageWhenQueryIsBlank() {
@@ -127,8 +117,6 @@ class SearchScreenTest {
             intents.filterIsInstance<SearchIntent.ResultActivated>().single(),
         )
     }
-
-    // --- Permission prompts ---------------------------------------------------------------
 
     @Test
     fun permissionPrompt_rendersInlineWhereResultsWouldBe() {
@@ -203,8 +191,6 @@ class SearchScreenTest {
         )
     }
 
-    // --- Panel --------------------------------------------------------------------------
-
     @Test
     fun panel_showsResults() {
         setScreen(stateWithResults(), SearchPresentation.Panel)
@@ -217,7 +203,6 @@ class SearchScreenTest {
         var dismissed = false
         setScreen(stateWithResults(), SearchPresentation.Panel, onDismiss = { dismissed = true })
 
-        // Well above the bottom-anchored card: this is scrim.
         compose.onRoot().performTouchInput { click(Offset(centerX, top + 40f)) }
         compose.waitForIdle()
 
@@ -229,8 +214,6 @@ class SearchScreenTest {
         var dismissed = false
         setScreen(stateWithResults(), SearchPresentation.Panel, onDismiss = { dismissed = true })
 
-        // The section header sits inside the card and has no click handler of its own,
-        // so this exercises the panel's tap-swallowing rather than a button.
         compose.onNodeWithText(context.getString(R.string.section_app)).performClick()
         compose.waitForIdle()
 

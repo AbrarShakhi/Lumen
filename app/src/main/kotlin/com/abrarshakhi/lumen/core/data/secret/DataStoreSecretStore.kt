@@ -18,7 +18,6 @@ import java.io.File
 import java.io.InputStream
 import java.io.OutputStream
 
-/** Ciphertext envelopes keyed by secret id. Never contains plaintext. */
 @Serializable
 internal data class SecretsEnvelope(
     val secrets: Map<String, String> = emptyMap(),
@@ -40,14 +39,6 @@ internal class SecretsEnvelopeSerializer(private val json: Json) : Serializer<Se
     }
 }
 
-/**
- * API keys, encrypted at rest.
- *
- * Kept in a file of its own rather than alongside settings, for two reasons: secrets can be
- * wiped independently of preferences, and the file is excluded from backup. Keystore keys
- * are never backed up, so a restored envelope would be undecryptable ciphertext — better to
- * ask the user to re-enter a key than to restore something that can only fail.
- */
 class DataStoreSecretStore(
     context: Context,
     scope: CoroutineScope,
@@ -72,10 +63,6 @@ class DataStoreSecretStore(
         return try {
             cipher.decrypt(envelope)
         } catch (_: KeystoreSecretCipher.DecryptionFailed) {
-            // The key was rotated or invalidated, so this value can never be recovered.
-            // Dropping it means the UI shows "not configured" and the user can re-enter the
-            // key, rather than the app repeatedly failing to decrypt something it will
-            // never read again.
             clear(id)
             null
         }

@@ -4,10 +4,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-/**
- * The "join call" action is the main reason to search for a meeting, so link detection has
- * to work against the messy text real invitations contain.
- */
 class MeetingLinksTest {
 
     @Test
@@ -41,7 +37,6 @@ class MeetingLinksTest {
 
     @Test
     fun `location is searched before description`() {
-        // A link in the location field was put there deliberately.
         assertEquals(
             "https://meet.google.com/aaa-bbbb-ccc",
             MeetingLinks.find(
@@ -72,7 +67,6 @@ class MeetingLinksTest {
 
     @Test
     fun `trailing punctuation is not captured as part of the url`() {
-        // "See https://meet.google.com/abc-defg-hij." would otherwise yield a broken link.
         assertEquals(
             "https://meet.google.com/abc-defg-hij",
             MeetingLinks.find("See https://meet.google.com/abc-defg-hij."),
@@ -88,7 +82,6 @@ class MeetingLinksTest {
 
     @Test
     fun `an unrelated url is not treated as a meeting`() {
-        // Offering "Join call" for a docs link would be misleading.
         assertNull(MeetingLinks.find("https://example.com/agenda.pdf"))
     }
 }

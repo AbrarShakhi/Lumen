@@ -13,12 +13,6 @@ sealed interface ProvidersIntent : MviIntent {
     data class EnabledSet(val providerId: ProviderId, val enabled: Boolean) : ProvidersIntent
     data class PermissionRequested(val providerId: ProviderId) : ProvidersIntent
 
-    /**
-     * Re-read permission state.
-     *
-     * Permissions can change outside the app — in system settings, or via the OS dialog —
-     * and there is no flow to observe, so the screen re-reads whenever it resumes.
-     */
     data object Refreshed : ProvidersIntent
 }
 
@@ -39,20 +33,13 @@ data class ProviderSetting(
     val permission: ProviderPermissionState,
 )
 
-/** What is standing between a provider and being able to produce results. */
 sealed interface ProviderPermissionState {
-    /** The provider needs nothing granted. */
     data object NotRequired : ProviderPermissionState
 
     data object Granted : ProviderPermissionState
 
-    /** Missing, but still requestable with a dialog. */
     data class Missing(val permissions: List<AppPermission>) : ProviderPermissionState
 
-    /**
-     * Denied with "don't ask again" — a dialog would be a no-op, so the UI must send the
-     * user to system settings instead of pretending a prompt will work.
-     */
     data class Blocked(val permissions: List<AppPermission>) : ProviderPermissionState
 }
 

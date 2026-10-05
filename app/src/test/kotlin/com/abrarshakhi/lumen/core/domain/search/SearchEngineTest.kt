@@ -15,18 +15,8 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * The specification of the search architecture.
- *
- * These assert the properties that make search feel instant: fast providers render without
- * waiting for slow ones, a keystroke cancels in-flight work, a slow provider is bounded,
- * and one failing provider cannot take down the rest. If any of these break, the app
- * regresses in a way that is very hard to notice by hand.
- */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SearchEngineTest {
-
-    // --- Test doubles -------------------------------------------------------------------
 
     private class FakeProvider(
         name: String,
@@ -87,8 +77,6 @@ class SearchEngineTest {
             GateDecision(dispatch = if (query.isBlank) emptyList() else providers, permissionRequests = emptyList())
     }
 
-    // --- Specification ------------------------------------------------------------------
-
     @Test
     fun `a single provider's results are rendered`() = runTest {
         val provider = FakeProvider("apps", metadata(order = 10)) { listOf(result("a", "Alpha")) }
@@ -107,8 +95,6 @@ class SearchEngineTest {
         }
 
         engine(fast, slow).observe(MutableStateFlow("q")).test {
-            // The point of the architecture: something is on screen with the slow
-            // provider still outstanding, rather than waiting for the slowest.
             var sawPartial = false
             var settled: SearchResults? = null
             while (settled == null) {
@@ -175,7 +161,6 @@ class SearchEngineTest {
 
         engine(instant, debounced).observe(MutableStateFlow("q")).test {
             val first = awaitItem()
-            // Instant provider must not be held back by the debounced one's delay.
             assertTrue(
                 first.isEmpty || first.flatResults.none { it.title == "Debounced" },
                 "debounced provider should not have emitted yet",

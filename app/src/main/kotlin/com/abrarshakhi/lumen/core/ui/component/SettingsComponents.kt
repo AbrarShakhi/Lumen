@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
-/** A titled group of related settings. */
 @Composable
 fun SettingsSection(
     title: String,
@@ -38,7 +37,6 @@ fun SettingsSection(
     }
 }
 
-/** A setting that is on or off. */
 @Composable
 fun SettingsSwitchRow(
     title: String,
@@ -51,8 +49,6 @@ fun SettingsSwitchRow(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            // The whole row toggles, so the switch is not a small tap target. `Role.Switch`
-            // makes it read correctly to TalkBack as one control rather than two.
             .clickable(enabled = enabled, role = Role.Switch) { onCheckedChange(!checked) }
             .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -76,7 +72,6 @@ fun SettingsSwitchRow(
     }
 }
 
-/** A small set of mutually exclusive options, rendered inline as chips. */
 @Composable
 fun <T> SettingsChoiceRow(
     title: String,
@@ -107,7 +102,6 @@ fun <T> SettingsChoiceRow(
     }
 }
 
-/** A continuous setting with a live readout of its current value. */
 @Composable
 fun SettingsSliderRow(
     title: String,
@@ -141,7 +135,6 @@ fun SettingsSliderRow(
     }
 }
 
-/** A row that opens another screen. */
 @Composable
 fun SettingsNavigationRow(
     title: String,

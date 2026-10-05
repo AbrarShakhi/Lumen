@@ -24,21 +24,6 @@ object NoteEditorReducer : Reducer<NoteEditorState, NoteEditorAction> {
         }
 }
 
-/**
- * Edits one note, saving as you type.
- *
- * There is no save button: a scratchpad should keep whatever you wrote without being asked.
- * Two mechanisms cover that, because neither is sufficient alone:
- *
- *  - a debounced autosave on [viewModelScope], which persists during normal typing and so
- *    survives a crash or the process being killed;
- *  - a final flush from [onCleared] on an **application-scoped** coroutine, catching edits
- *    made in the last few hundred milliseconds before the screen closed.
- *
- * The application scope is essential. An earlier version saved from the composable's
- * `onDispose` using `rememberCoroutineScope`, which is already cancelled by the time
- * `onDispose` runs — the launch silently never executed and every note was lost.
- */
 @OptIn(FlowPreview::class)
 class NoteEditorViewModel(
     private val notes: NoteRepository,
@@ -49,18 +34,11 @@ class NoteEditorViewModel(
     reducer = NoteEditorReducer,
 ) {
 
-    /** Serialises saves so the autosave and the final flush cannot interleave. */
     private val saveLock = Mutex()
 
     @Volatile
     private var discarded = false
 
-    /**
-     * The content as last persisted.
-     *
-     * Compared before writing so that merely *opening* a note does not rewrite it — that
-     * would bump `updated_at` and silently reorder the notes list just by looking at one.
-     */
     @Volatile
     private var lastPersisted: NoteEditorState? = null
 
@@ -68,7 +46,6 @@ class NoteEditorViewModel(
         viewModelScope.launch { load() }
 
         state
-            // Skip the initial empty state; only real edits are worth writing.
             .drop(1)
             .debounce(AUTOSAVE_DELAY)
             .onEach { persist() }
@@ -89,7 +66,6 @@ class NoteEditorViewModel(
             is NoteEditorIntent.BodyChanged -> reduce(NoteEditorAction.BodyChanged(intent.value))
 
             NoteEditorIntent.Deleted -> {
-                // Set before deleting so a racing autosave cannot resurrect the note.
                 discarded = true
                 noteId?.let { notes.delete(it) }
                 noteId = null
@@ -105,8 +81,6 @@ class NoteEditorViewModel(
 
     override fun onCleared() {
         if (discarded) return
-        // viewModelScope is cancelled by the time this runs, so the flush has to happen on
-        // a scope that outlives the screen.
         applicationScope.launch { persist() }
     }
 
@@ -115,7 +89,6 @@ class NoteEditorViewModel(
         val current = currentState
         if (current == lastPersisted) return@withLock
         if (current.isBlank) {
-            // Nothing was written; an empty note would just be clutter.
             noteId?.let { notes.delete(it) }
             noteId = null
             lastPersisted = current

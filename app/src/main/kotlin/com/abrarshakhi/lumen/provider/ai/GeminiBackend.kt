@@ -17,17 +17,6 @@ import kotlinx.serialization.Serializable
 import java.io.IOException
 import kotlin.coroutines.cancellation.CancellationException
 
-/**
- * Google Gemini.
- *
- * Uses the non-streaming `generateContent` endpoint. Streaming would let the answer appear
- * token by token, but it needs server-sent events whose exact framing differs between
- * providers — worth doing once it can be verified against a real key rather than guessed at.
- * The provider around this already emits progressively, so switching later changes only
- * this class.
- *
- * The key travels in a header, never the URL: query strings end up in logs and proxies.
- */
 class GeminiBackend(
     private val client: HttpClient,
     private val model: String = DEFAULT_MODEL,
@@ -70,13 +59,9 @@ class GeminiBackend(
                     }
                 }
 
-                // Gemini returns 400 "API key not valid" for a malformed key, and 401 for
-                // an unauthenticated request.
                 HttpStatusCode.Unauthorized, HttpStatusCode.BadRequest ->
                     AiAnswer.Failed(AiFailure.InvalidKey)
 
-                // 403 PERMISSION_DENIED means the key parsed fine but its project is not
-                // allowed — a different problem with a different fix.
                 HttpStatusCode.Forbidden -> AiAnswer.Failed(AiFailure.AccessDenied)
 
                 HttpStatusCode.TooManyRequests -> AiAnswer.Failed(AiFailure.RateLimited)
@@ -84,9 +69,6 @@ class GeminiBackend(
                 else -> AiAnswer.Failed(AiFailure.Unknown)
             }
         } catch (cancellation: CancellationException) {
-            // Never swallowed. The next keystroke cancels this request through
-            // flatMapLatest, and treating that as a failure would both break structured
-            // concurrency and paint a spurious "couldn't get an answer" row.
             throw cancellation
         } catch (_: IOException) {
             AiAnswer.Failed(AiFailure.Network)
@@ -94,8 +76,6 @@ class GeminiBackend(
             AiAnswer.Failed(AiFailure.Unknown)
         }
     }
-
-    // --- Wire format ---------------------------------------------------------------------
 
     @Serializable
     private data class GenerateRequest(
@@ -124,7 +104,6 @@ class GeminiBackend(
         const val DEFAULT_BASE_URL = "https://generativelanguage.googleapis.com"
         const val DEFAULT_MODEL = "gemini-3.6-flash"
 
-        /** Answers are shown in a search row, so a long essay would be unusable anyway. */
         const val MAX_TOKENS = 512
     }
 }

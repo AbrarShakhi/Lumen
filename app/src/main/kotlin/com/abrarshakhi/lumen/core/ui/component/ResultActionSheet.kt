@@ -26,13 +26,6 @@ import com.abrarshakhi.lumen.core.domain.search.ResultAction
 import com.abrarshakhi.lumen.core.domain.search.SearchResult
 import com.abrarshakhi.lumen.core.ui.text.resolve
 
-/**
- * Every action a result offers.
- *
- * A row can only show two actions inline before it gets noisy, but a contact may have a
- * dial, an SMS, WhatsApp, Telegram and "open contact". Long-pressing reveals the full set
- * rather than hiding the extras.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ResultActionSheet(

@@ -46,8 +46,6 @@ class SettingsViewModelTest {
 
     @Test
     fun `font scale is clamped to the supported range`() = runTest {
-        // The slider cannot produce these, but a restored preference or a future caller
-        // could, and an unclamped scale would make the UI unusable.
         val preferences = FakePreferences()
         val viewModel = SettingsViewModel(preferences)
         advanceUntilIdle()

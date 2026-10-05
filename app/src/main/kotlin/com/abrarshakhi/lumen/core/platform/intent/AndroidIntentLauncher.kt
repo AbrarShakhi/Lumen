@@ -14,12 +14,6 @@ import com.abrarshakhi.lumen.core.domain.platform.PlatformIntent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Turns a [PlatformIntent] into a real Android intent and launches it.
- *
- * The `when` below is exhaustive over Android's intent surface — a closed, stable set —
- * rather than over providers, which is why adding a provider never touches this file.
- */
 class AndroidIntentLauncher(
     private val context: Context,
     private val launcherApps: LauncherAppsDataSource,
@@ -27,22 +21,18 @@ class AndroidIntentLauncher(
 
     override suspend fun launch(intent: PlatformIntent): Boolean =
         withContext(Dispatchers.Main.immediate) {
-            // Shortcuts bypass the Intent system entirely.
             if (intent is PlatformIntent.AppShortcut) {
                 return@withContext launcherApps.startShortcut(intent.packageName, intent.shortcutId)
             }
 
             val androidIntent = intent.toAndroidIntent()
             try {
-                // Lumen launches from surfaces that may not be an Activity (tile, widget),
-                // so a new task is always required.
                 androidIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 context.startActivity(androidIntent)
                 true
             } catch (_: ActivityNotFoundException) {
                 false
             } catch (_: SecurityException) {
-                // e.g. an exported="false" activity, or a call placed without CALL_PHONE.
                 false
             }
         }
@@ -92,12 +82,10 @@ class AndroidIntentLauncher(
             Uri.fromParts("package", packageName, null),
         )
 
-        // Handled before this point; unreachable.
         is PlatformIntent.AppShortcut -> error("Shortcuts are launched via LauncherApps")
 
         is PlatformIntent.CalendarEvent -> Intent(Intent.ACTION_VIEW).apply {
             data = ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, eventId)
-            // Selects which occurrence of a recurring event to show.
             putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, beginMillis)
             putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
         }

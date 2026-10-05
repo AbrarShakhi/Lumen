@@ -2,13 +2,6 @@ package com.abrarshakhi.lumen.feature.search
 
 import com.abrarshakhi.lumen.core.mvi.Reducer
 
-/**
- * The search screen's state transitions.
- *
- * A pure function with no dependencies, so its tests are
- * `assertEquals(expected, SearchReducer.reduce(state, action))` — no dispatcher, no
- * Turbine, no flakiness. All I/O and orchestration lives in [SearchViewModel].
- */
 object SearchReducer : Reducer<SearchState, SearchAction> {
 
     override fun reduce(state: SearchState, action: SearchAction): SearchState =

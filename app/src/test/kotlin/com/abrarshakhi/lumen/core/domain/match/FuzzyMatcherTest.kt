@@ -6,13 +6,6 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/**
- * The specification of Lumen's matching behaviour.
- *
- * These are the assertions that define what "the search feels right" means, so they are
- * expressed in terms of user-visible outcomes ("typing gm finds Google Maps") rather than
- * exact scores, which are free to be tuned.
- */
 class FuzzyMatcherTest {
 
     private fun match(query: String, label: String): MatchScore? =
@@ -21,30 +14,21 @@ class FuzzyMatcherTest {
     private fun scoreOf(query: String, label: String): Float =
         assertNotNull(match(query, label), "expected '$query' to match '$label'").score
 
-    // --- Structural tiers ---------------------------------------------------------------
-
     @Test
     fun `exact match scores highest`() {
         assertEquals(1.0f, scoreOf("chrome", "Chrome"))
     }
 
-    /**
-     * Tier ordering is only meaningful *within a single query* — that is the only case
-     * ranking ever compares. Comparing scores across different queries says nothing.
-     */
     @Test
     fun `for one query, stronger structural evidence wins`() {
-        // "gm": a literal prefix of "Gmail" is stronger evidence than an acronym of "Google Maps".
         val prefix = scoreOf("gm", "Gmail")
         val acronym = scoreOf("gm", "Google Maps")
         assertTrue(prefix > acronym, "prefix $prefix should beat acronym $acronym")
 
-        // "maps": an exact match beats the same word appearing later in a longer label.
         val exact = scoreOf("maps", "Maps")
         val wordPrefix = scoreOf("maps", "Google Maps")
         assertTrue(exact > wordPrefix, "exact $exact should beat word-prefix $wordPrefix")
 
-        // "doc": a head prefix beats the same characters reached as a scattered subsequence.
         val headPrefix = scoreOf("doc", "Docs")
         val subsequence = scoreOf("doc", "Dungeon of Chaos")
         assertTrue(headPrefix > subsequence, "prefix $headPrefix should beat subsequence $subsequence")
@@ -59,7 +43,6 @@ class FuzzyMatcherTest {
 
     @Test
     fun `camel case counts as a word boundary`() {
-        // "YouTube" is one token but two words to a human.
         assertNotNull(match("yt", "YouTube"))
     }
 
@@ -75,8 +58,6 @@ class FuzzyMatcherTest {
         assertNotNull(match("gdocs", "Google Docs"))
         assertNotNull(match("stngs", "Settings"))
     }
-
-    // --- Typo tolerance -----------------------------------------------------------------
 
     @Test
     fun `transposed characters still match`() {
@@ -97,11 +78,8 @@ class FuzzyMatcherTest {
 
     @Test
     fun `short queries do not get typo tolerance`() {
-        // Allowing edits on 3 characters would match almost anything to almost anything.
         assertNull(match("xyz", "Chrome"))
     }
-
-    // --- Normalisation ------------------------------------------------------------------
 
     @Test
     fun `diacritics are ignored in both directions`() {
@@ -114,8 +92,6 @@ class FuzzyMatcherTest {
         assertEquals(scoreOf("CHROME", "Chrome"), scoreOf("chrome", "chrome"))
     }
 
-    // --- Negative cases -----------------------------------------------------------------
-
     @Test
     fun `unrelated queries do not match`() {
         assertNull(match("spotify", "Calculator"))
@@ -124,7 +100,6 @@ class FuzzyMatcherTest {
 
     @Test
     fun `out of order characters do not match`() {
-        // Subsequence requires order: "emorhc" is "chrome" backwards.
         assertNull(match("emorhc", "Chrome"))
     }
 
@@ -132,8 +107,6 @@ class FuzzyMatcherTest {
     fun `empty candidate never matches`() {
         assertNull(match("anything", ""))
     }
-
-    // --- Highlight ranges ---------------------------------------------------------------
 
     @Test
     fun `prefix match highlights the matched span`() {

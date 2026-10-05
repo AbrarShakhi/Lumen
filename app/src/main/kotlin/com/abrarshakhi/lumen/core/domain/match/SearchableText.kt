@@ -1,11 +1,5 @@
 package com.abrarshakhi.lumen.core.domain.match
 
-/**
- * A pre-processed string ready to be matched against, with the derived forms computed once.
- *
- * Built at *index* time, never per keystroke: normalisation and word-boundary detection
- * over a few hundred app labels is wasted work if repeated on every character typed.
- */
 class SearchableText private constructor(
     val original: String,
     val normalized: String,
@@ -24,7 +18,6 @@ class SearchableText private constructor(
             )
         }
 
-        /** Rebuilds from values already persisted, skipping recomputation. */
         fun restored(original: String, normalized: String, acronym: String): SearchableText =
             SearchableText(
                 original = original,
@@ -35,10 +28,4 @@ class SearchableText private constructor(
     }
 }
 
-/**
- * How well a query matched, and where.
- *
- * [ranges] index into [SearchableText.normalized], which is index-aligned with the original
- * for every case Lumen handles, so the UI can highlight the matched characters directly.
- */
 data class MatchScore(val score: Float, val ranges: List<IntRange>)

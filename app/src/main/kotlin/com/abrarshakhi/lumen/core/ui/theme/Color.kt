@@ -2,12 +2,6 @@ package com.abrarshakhi.lumen.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * Fallback palette, used when dynamic colour is unavailable or switched off.
- *
- * Neutral and low-chroma on purpose: Lumen is a surface you look *through* on the way to
- * something else, so the palette should stay out of the way of app icons and contact photos.
- */
 internal val LumenDarkColors = LumenPalette(
     primary = Color(0xFFB9C6FF),
     onPrimary = Color(0xFF16275C),
@@ -44,7 +38,6 @@ internal val LumenLightColors = LumenPalette(
     onError = Color(0xFFFFFFFF),
 )
 
-/** The subset of Material colour roles Lumen actually overrides. */
 internal data class LumenPalette(
     val primary: Color,
     val onPrimary: Color,

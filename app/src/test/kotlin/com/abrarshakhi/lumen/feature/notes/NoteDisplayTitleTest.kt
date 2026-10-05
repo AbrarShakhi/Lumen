@@ -20,8 +20,6 @@ class NoteDisplayTitleTest {
 
     @Test
     fun `leading blank lines are skipped`() {
-        // Taking the literal first line left the title empty, which is what used to force
-        // an "Untitled" placeholder into the provider.
         assertEquals("milk", note("", "\n\n  milk\nbread").displayTitle)
         assertEquals("milk", note("   ", "\nmilk").displayTitle)
     }

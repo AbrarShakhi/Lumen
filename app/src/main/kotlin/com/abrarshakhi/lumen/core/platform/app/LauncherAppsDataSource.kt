@@ -15,7 +15,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.withContext
 
-/** A shortcut published by an installed app, e.g. "New message". */
 data class AppShortcut(
     val id: String,
     val packageName: String,
@@ -23,7 +22,6 @@ data class AppShortcut(
     val appLabel: String,
 )
 
-/** A launchable activity as reported by the system. */
 data class InstalledApp(
     val packageName: String,
     val activityName: String,
@@ -31,13 +29,6 @@ data class InstalledApp(
     val isSystem: Boolean,
 )
 
-/**
- * Enumerates launchable apps.
- *
- * Uses `LauncherApps.getActivityList` rather than `PackageManager.queryIntentActivities`:
- * it returns label and component in one pass, and it is user-aware, so work-profile apps
- * are handled correctly rather than silently missing.
- */
 class LauncherAppsDataSource(
     private val context: Context,
 ) {
@@ -63,14 +54,6 @@ class LauncherAppsDataSource(
         }.getOrDefault(emptyList())
     }
 
-    /**
-     * Emits whenever the set of installed apps changes.
-     *
-     * Without this the index is only built at startup, so an app installed while Lumen is
-     * running stays unsearchable — and one that was uninstalled keeps appearing and fails
-     * when launched. `LauncherApps.Callback` works without the home role, unlike shortcut
-     * access.
-     */
     fun packageChanges(): Flow<Unit> = callbackFlow {
         val apps = launcherApps
         if (apps == null) {
@@ -106,28 +89,13 @@ class LauncherAppsDataSource(
             }
         }
 
-        // LauncherApps requires a Handler; the main looper is fine because the callback
-        // only signals, and the actual rescan happens on a background dispatcher.
         apps.registerCallback(callback, Handler(Looper.getMainLooper()))
         awaitClose { runCatching { apps.unregisterCallback(callback) } }
     }
 
-    /**
-     * Whether Lumen may read other apps' shortcuts.
-     *
-     * True only while Lumen holds the home role — Android exposes shortcuts exclusively to
-     * the default launcher, with no partial fallback for other apps.
-     */
     fun canReadShortcuts(): Boolean =
         runCatching { launcherApps?.hasShortcutHostPermission() == true }.getOrDefault(false)
 
-    /**
-     * Shortcuts published by installed apps.
-     *
-     * Returns empty unless Lumen holds the home role — Android shares shortcuts only with
-     * the current launcher, and there is no partial fallback. Failures are swallowed rather
-     * than propagated so the apps provider degrades to plain app results.
-     */
     suspend fun loadShortcuts(): List<AppShortcut> = withContext(Dispatchers.IO) {
         val apps = launcherApps ?: return@withContext emptyList()
         if (!canReadShortcuts()) return@withContext emptyList()
@@ -145,7 +113,6 @@ class LauncherAppsDataSource(
         }.getOrDefault(emptyList())
     }
 
-    /** Launches a shortcut. Only possible while Lumen is the launcher. */
     fun startShortcut(packageName: String, shortcutId: String): Boolean = runCatching {
         launcherApps?.startShortcut(
             packageName,

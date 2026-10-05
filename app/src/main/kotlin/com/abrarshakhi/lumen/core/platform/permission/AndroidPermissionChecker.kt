@@ -10,14 +10,6 @@ import com.abrarshakhi.lumen.core.domain.permission.AppPermission
 import com.abrarshakhi.lumen.core.domain.permission.PermissionChecker
 import com.abrarshakhi.lumen.core.domain.permission.PermissionRequestRecorder
 
-/**
- * Reads runtime permission state.
- *
- * "Permanently denied" is not directly observable on Android — the system only exposes
- * `shouldShowRequestPermissionRationale`, which requires an Activity and is ambiguous
- * before the first ask. Lumen therefore records that it has asked, and treats
- * "asked before, still not granted, no rationale" as permanent denial.
- */
 class AndroidPermissionChecker(
     private val context: Context,
     private val askHistory: SharedPreferences,

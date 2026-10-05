@@ -20,12 +20,6 @@ import com.abrarshakhi.lumen.provider.math.calc.Calculator
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
-/**
- * Answers arithmetic typed into the search field.
- *
- * Ranked as an [ResultCategory.Answer] so a calculation appears above app matches — if you
- * typed a sum, the sum is what you wanted.
- */
 class MathSearchProvider : SnapshotSearchProvider() {
 
     override val id = ProviderId("math")
@@ -36,7 +30,6 @@ class MathSearchProvider : SnapshotSearchProvider() {
         order = 1,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,
-        // "1+1" is the shortest real expression.
         minQueryLength = 3,
     )
 
@@ -53,8 +46,6 @@ class MathSearchProvider : SnapshotSearchProvider() {
                 icon = IconSource.Vector(LumenIcon.Calculator),
                 category = ResultCategory.Answer,
                 score = 1f,
-                // Every calculation is unique, so usage is tracked for the calculator as a
-                // whole rather than per expression.
                 rankingKey = "math",
                 triggerable = false,
                 actions = ResultActions(
@@ -64,8 +55,6 @@ class MathSearchProvider : SnapshotSearchProvider() {
                         icon = IconSource.Vector(LumenIcon.Copy),
                         kind = ActionKind.Copy,
                         invoke = { context ->
-                            // Copy the plain value, not the grouped display form — pasting
-                            // "1,234" into another field rarely does what is wanted.
                             context.copyToClipboard(
                                 "Result",
                                 NumberFormatting.format(result.value, groupDigits = false),

@@ -17,10 +17,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/**
- * The reducer is a pure function, which is exactly why these tests need no dispatcher,
- * no Turbine and no coroutine machinery — the payoff for splitting Intent from Action.
- */
 class SearchReducerTest {
 
     private fun result(id: String, title: String = id) = SearchResult(

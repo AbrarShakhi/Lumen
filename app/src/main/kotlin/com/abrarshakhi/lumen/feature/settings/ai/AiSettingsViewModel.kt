@@ -10,13 +10,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/**
- * Manages the stored AI key.
- *
- * Plain [ViewModel] rather than the MVI base: there is no reducer worth having for a screen
- * whose entire state is "is a key set", and forcing the ceremony would add indirection
- * without adding clarity.
- */
 class AiSettingsViewModel(
     private val backend: AiBackend,
     private val secrets: SecretStore,
@@ -51,7 +44,6 @@ class AiSettingsViewModel(
         viewModelScope.launch { refreshNow() }
     }
 
-    /** Only ever asks *whether* a key exists — the value is never read back into the UI. */
     private suspend fun refreshNow() {
         val has = secrets.has(backend.id.secretId)
         _state.update { it.copy(hasKey = has) }
