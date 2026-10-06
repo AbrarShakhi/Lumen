@@ -83,8 +83,8 @@ class MarkdownParserTest {
     @Test
     fun `bundled project documents parse without leftover markup`() {
         ProjectDocument.entries.forEach { document ->
-            val file = File("../${document.fileName}")
-            assertTrue(file.isFile, "${document.fileName} is missing from the project root")
+            val file = File("../${document.projectPath}")
+            assertTrue(file.isFile, "${document.projectPath} is missing from the project")
 
             val blocks = MarkdownParser.parse(file.readText(), document.format)
             assertTrue(blocks.isNotEmpty(), "${document.fileName} produced no content")

@@ -81,10 +81,10 @@ val bundleDocuments = tasks.register<BundleDocumentsTask>("bundleDocuments") {
     description = "Copies the project's About, Credits, Terms, Privacy and License documents into app assets."
     documents.from(
         rootProject.layout.projectDirectory.files(
-            "ABOUT.md",
-            "CREDITS.md",
-            "TERMS.md",
-            "PRIVACY.md",
+            "docs/ABOUT.md",
+            "docs/CREDITS.md",
+            "docs/TERMS.md",
+            "docs/PRIVACY.md",
             "LICENSE",
         ),
     )
