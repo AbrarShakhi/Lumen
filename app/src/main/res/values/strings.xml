@@ -44,7 +44,7 @@
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
-    <string name="settings_dynamic_color">Wallpaper colours</string>
+    <string name="settings_dynamic_color">Wallpaper colors</string>
     <string name="settings_dynamic_color_summary">Build the palette from your wallpaper</string>
     <string name="settings_font_size">Text size</string>
     <string name="settings_font_size_value">%1$d%%</string>
@@ -107,13 +107,19 @@
     <string name="ai_failed">Couldn\'t get an answer</string>
     <string name="ai_add_key">Add key</string>
     <string name="ai_title">AI answers</string>
-    <string name="ai_key_label">API key</string>
     <string name="ai_key_hint">Paste your key</string>
     <string name="ai_key_saved">Key saved</string>
-    <string name="ai_key_configured">A key is configured</string>
     <string name="ai_key_none">No key yet</string>
     <string name="ai_key_remove">Remove key</string>
-    <string name="ai_get_key">Where to get a key</string>
+    <string name="ai_powered_by">Powered by %1$s</string>
+    <string name="ai_key_title">%1$s API key</string>
+    <string name="ai_key_field_label">%1$s API key</string>
+    <string name="ai_key_field_support">Create a free key in %1$s.</string>
+    <string name="ai_get_key_from">Get a key from %1$s</string>
+    <string name="ai_supported_title">Supports %1$s only</string>
+    <string name="ai_supported_body">Lumen sends AI questions to %1$s. Use an API key created in %2$s. Keys from other providers, such as OpenAI or Anthropic, will not work.</string>
+    <string name="ai_key_configured_for">Your %1$s key is saved and encrypted on this device.</string>
+    <string name="ai_needs_key_for">Add a %1$s API key to start asking questions.</string>
     <string name="ai_usage_hint">Type \u201Cai &lt;question&gt;\u201D in search to ask.</string>
 
     <string name="setting_wifi">Wi-Fi</string>
@@ -157,6 +163,7 @@
     <string name="notes_body_hint">Write something\u2026</string>
     <string name="notes_delete">Delete note</string>
     <string name="notes_untitled">Untitled</string>
+    <string name="notes_just_now">Just now</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
@@ -186,9 +193,9 @@
     <string name="settings_ai_summary">Ask questions right from the search bar</string>
     <string name="settings_folders_summary">Let Lumen search your documents</string>
     <string name="settings_dynamic_color_unsupported">Needs Android 12 or newer</string>
-    <string name="settings_accent">Accent colour</string>
-    <string name="settings_accent_wallpaper">Turn off wallpaper colours to pick your own</string>
-    <string name="settings_color_style">Colour style</string>
+    <string name="settings_accent">Accent color</string>
+    <string name="settings_accent_wallpaper">Turn off wallpaper colors to pick your own</string>
+    <string name="settings_color_style">Color style</string>
     <string name="settings_color_style_summary">How boldly the palette is applied</string>
     <string name="settings_pure_black">Pure black</string>
     <string name="settings_pure_black_summary">Darkest background in dark theme, easy on OLED screens</string>
@@ -250,4 +257,25 @@
     <string name="surfaces_assistant_unavailable">Assistant settings aren\'t available on this device</string>
     <string name="surfaces_launcher_action">Set up</string>
 
+    <string name="action_retry">Try again</string>
+    <string name="about_group">About</string>
+    <string name="about_title">About Lumen</string>
+    <string name="settings_about_summary">Version, source code, credits, and legal information</string>
+    <string name="about_description">A fast, private, universal search app for Android. Open source under the Apache License 2.0.</string>
+    <string name="about_group_project">Open source</string>
+    <string name="about_group_legal">Legal</string>
+    <string name="about_source_code">Source code</string>
+    <string name="about_source_code_summary">View the project on GitHub</string>
+    <string name="about_star">Star on GitHub</string>
+    <string name="about_star_summary">Support the project by starring the repository</string>
+    <string name="about_report_issue">Report an issue</string>
+    <string name="about_report_issue_summary">Report a bug or request a feature</string>
+    <string name="about_copyright">Copyright 2026 AbrarShakhi. Licensed under the Apache License, Version 2.0.</string>
+    <string name="document_about">About</string>
+    <string name="document_credits">Credits</string>
+    <string name="document_terms">Terms and Conditions</string>
+    <string name="document_privacy">Privacy Policy</string>
+    <string name="document_license">License</string>
+    <string name="document_unavailable_title">Document unavailable</string>
+    <string name="document_unavailable_body">This document could not be opened. Please try again.</string>
 </resources>

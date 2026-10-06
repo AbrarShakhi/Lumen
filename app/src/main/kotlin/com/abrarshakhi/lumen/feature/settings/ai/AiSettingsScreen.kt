@@ -19,6 +19,7 @@ import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -63,7 +64,7 @@ fun AiSettingsScreen(
 
     LumenScaffold(
         title = stringResource(R.string.ai_title),
-        subtitle = state.backendName.takeIf { it.isNotBlank() },
+        subtitle = stringResource(R.string.ai_powered_by, state.providerLabel),
         onBack = onBack,
         modifier = modifier,
     ) { innerPadding ->
@@ -76,19 +77,24 @@ fun AiSettingsScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            KeyStatusCard(hasKey = state.hasKey)
+            KeyStatusCard(hasKey = state.hasKey, providerLabel = state.providerLabel)
 
             SectionCard(
                 icon = Icons.Filled.Key,
-                title = stringResource(R.string.ai_key_label),
+                title = stringResource(R.string.ai_key_title, state.providerLabel),
                 tone = IconTone.Secondary,
                 shape = LumenShape.Gem,
             ) {
+                SupportedProviderNotice(
+                    providerLabel = state.providerLabel,
+                    keySourceName = state.keySourceName,
+                )
                 OutlinedTextField(
                     value = draft,
                     onValueChange = { draft = it },
-                    label = { Text(stringResource(R.string.ai_key_label)) },
+                    label = { Text(stringResource(R.string.ai_key_field_label, state.providerLabel)) },
                     placeholder = { Text(stringResource(R.string.ai_key_hint)) },
+                    supportingText = { Text(stringResource(R.string.ai_key_field_support, state.keySourceName)) },
                     singleLine = true,
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(
@@ -133,7 +139,7 @@ fun AiSettingsScreen(
                     shapes = ButtonDefaults.shapes(),
                     modifier = Modifier.padding(top = 4.dp),
                 ) {
-                    Text(stringResource(R.string.ai_get_key))
+                    Text(stringResource(R.string.ai_get_key_from, state.keySourceName))
                     Spacer(Modifier.width(ButtonDefaults.IconSpacing))
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.OpenInNew,
@@ -147,7 +153,38 @@ fun AiSettingsScreen(
 }
 
 @Composable
-private fun KeyStatusCard(hasKey: Boolean) {
+private fun SupportedProviderNotice(providerLabel: String, keySourceName: String) {
+    Surface(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Verified,
+                contentDescription = null,
+                modifier = Modifier.size(20.dp),
+            )
+            Column(Modifier.padding(start = 12.dp)) {
+                Text(
+                    text = stringResource(R.string.ai_supported_title, providerLabel),
+                    style = MaterialTheme.typography.titleSmallEmphasized,
+                )
+                Text(
+                    text = stringResource(R.string.ai_supported_body, providerLabel, keySourceName),
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun KeyStatusCard(hasKey: Boolean, providerLabel: String) {
     val container by animateColorAsState(
         targetValue = if (hasKey) {
             MaterialTheme.colorScheme.primaryContainer
@@ -179,7 +216,11 @@ private fun KeyStatusCard(hasKey: Boolean) {
                     style = MaterialTheme.typography.titleLargeEmphasized,
                 )
                 Text(
-                    text = stringResource(if (hasKey) R.string.ai_key_configured else R.string.ai_needs_key),
+                    text = if (hasKey) {
+                        stringResource(R.string.ai_key_configured_for, providerLabel)
+                    } else {
+                        stringResource(R.string.ai_needs_key_for, providerLabel)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -216,5 +257,9 @@ private fun SectionCard(
 
 data class AiSettingsState(
     val backendName: String = "",
+    val vendorName: String = "",
+    val keySourceName: String = "",
     val hasKey: Boolean = false,
-)
+) {
+    val providerLabel: String get() = listOf(vendorName, backendName).filter { it.isNotBlank() }.joinToString(" ")
+}

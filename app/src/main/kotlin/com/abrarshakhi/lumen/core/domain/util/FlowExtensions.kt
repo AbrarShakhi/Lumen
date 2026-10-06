@@ -14,10 +14,11 @@ fun <T> Flow<T>.takeUntilTimeout(duration: Duration): Flow<T> =
             val collector = launch {
                 collect { send(it) }
             }
-            launch {
+            val timer = launch {
                 delay(duration)
                 collector.cancel()
             }
             collector.join()
+            timer.cancel()
         }
     }

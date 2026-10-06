@@ -25,6 +25,8 @@ class GeminiBackend(
 
     override val id = AiBackendId("gemini")
     override val displayName = "Gemini"
+    override val vendorName = "Google"
+    override val keySourceName = "Google AI Studio"
     override val keyUrl = "https://aistudio.google.com/apikey"
 
     override suspend fun answer(prompt: String, apiKey: String): AiAnswer {

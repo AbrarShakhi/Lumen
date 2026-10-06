@@ -160,11 +160,7 @@ private fun NoteCard(
             )
         }
         Text(
-            text = DateUtils.getRelativeTimeSpanString(
-                note.updatedAtMillis,
-                System.currentTimeMillis(),
-                DateUtils.MINUTE_IN_MILLIS,
-            ).toString(),
+            text = relativeTime(note.updatedAtMillis),
             style = MaterialTheme.typography.labelSmall,
             color = content.copy(alpha = MUTED_ALPHA),
         )
@@ -198,6 +194,16 @@ internal fun DeleteNoteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
     )
 }
 
+@Composable
+private fun relativeTime(millis: Long): String {
+    val now = System.currentTimeMillis()
+    return if (now - millis < DateUtils.MINUTE_IN_MILLIS) {
+        stringResource(R.string.notes_just_now)
+    } else {
+        DateUtils.getRelativeTimeSpanString(millis, now, DateUtils.MINUTE_IN_MILLIS).toString()
+    }
+}
+
 private fun Note.cardBody(): String =
     if (title.isNotBlank()) {
         preview
@@ -210,6 +216,6 @@ private fun Note.cardBody(): String =
     }
 
 private val NOTE_TONES = listOf(IconTone.Primary, IconTone.Secondary, IconTone.Tertiary, IconTone.Neutral)
-private val NOTE_MIN_WIDTH = 160.dp
+private val NOTE_MIN_WIDTH = 150.dp
 private const val BODY_MAX_LINES = 8
 private const val MUTED_ALPHA = 0.72f

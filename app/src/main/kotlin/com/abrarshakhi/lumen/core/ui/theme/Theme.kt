@@ -1,12 +1,18 @@
 package com.abrarshakhi.lumen.core.ui.theme
 
 import android.content.Context
+import android.graphics.Color as AndroidColor
 import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +42,8 @@ fun LumenTheme(
         specVersion = ColorSpec.SpecVersion.SPEC_2025,
     )
 
+    SystemBarsStyle(darkTheme = darkTheme)
+
     MaterialExpressiveTheme(
         colorScheme = animateColorScheme(colorScheme),
         motionScheme = MotionScheme.expressive(),
@@ -43,6 +51,29 @@ fun LumenTheme(
         content = content,
     )
 }
+
+@Composable
+private fun SystemBarsStyle(darkTheme: Boolean) {
+    val activity = LocalActivity.current as? ComponentActivity ?: return
+    DisposableEffect(activity, darkTheme) {
+        activity.enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                lightScrim = AndroidColor.TRANSPARENT,
+                darkScrim = AndroidColor.TRANSPARENT,
+                detectDarkMode = { darkTheme },
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = LIGHT_NAVIGATION_SCRIM,
+                darkScrim = DARK_NAVIGATION_SCRIM,
+                detectDarkMode = { darkTheme },
+            ),
+        )
+        onDispose {}
+    }
+}
+
+private val LIGHT_NAVIGATION_SCRIM = AndroidColor.argb(0xE6, 0xFF, 0xFF, 0xFF)
+private val DARK_NAVIGATION_SCRIM = AndroidColor.argb(0x80, 0x1B, 0x1B, 0x1B)
 
 @Composable
 private fun ThemeMode.resolveDark(): Boolean = when (this) {

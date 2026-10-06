@@ -15,7 +15,13 @@ class AiSettingsViewModel(
     private val secrets: SecretStore,
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AiSettingsState(backendName = backend.displayName))
+    private val _state = MutableStateFlow(
+        AiSettingsState(
+            backendName = backend.displayName,
+            vendorName = backend.vendorName,
+            keySourceName = backend.keySourceName,
+        ),
+    )
     val state: StateFlow<AiSettingsState> = _state.asStateFlow()
 
     val keyUrl: String get() = backend.keyUrl

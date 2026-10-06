@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FolderOpen
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.automirrored.filled.ManageSearch
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Style
@@ -101,6 +102,23 @@ fun SettingsScreen(
                 SettingsGroup(
                     title = stringResource(R.string.settings_layout),
                     items = layoutItems(preferences, onIntent),
+                )
+            }
+
+            item(key = "about") {
+                SettingsGroup(
+                    title = stringResource(R.string.about_group),
+                    items = listOf(
+                        SettingsItem.Link(
+                            key = "about",
+                            title = stringResource(R.string.about_title),
+                            summary = stringResource(R.string.settings_about_summary),
+                            icon = Icons.Filled.Info,
+                            shape = LumenShape.Clover,
+                            tone = IconTone.Primary,
+                            onClick = { onNavigate(AppRouteKey.About) },
+                        ),
+                    ),
                 )
             }
         }

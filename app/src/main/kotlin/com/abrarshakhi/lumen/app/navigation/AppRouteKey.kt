@@ -37,6 +37,12 @@ sealed interface AppRouteKey : NavKey {
     data object Surfaces : AppRouteKey
 
     @Serializable
+    data object About : AppRouteKey
+
+    @Serializable
+    data class Document(val name: String) : AppRouteKey
+
+    @Serializable
     data object Notes : AppRouteKey
 
     @Serializable

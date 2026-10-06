@@ -1,6 +1,5 @@
 package com.abrarshakhi.lumen.feature.settings.surfaces
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -40,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -48,6 +46,7 @@ import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.domain.platform.HomeWidget
 import com.abrarshakhi.lumen.core.ui.component.Entrance
 import com.abrarshakhi.lumen.core.ui.component.IconTone
+import com.abrarshakhi.lumen.core.ui.component.LumenAppIcon
 import com.abrarshakhi.lumen.core.ui.component.LumenScaffold
 import com.abrarshakhi.lumen.core.ui.component.LumenShape
 import com.abrarshakhi.lumen.core.ui.component.ShapedIcon
@@ -265,11 +264,7 @@ private fun SearchWidgetPreview() {
             .padding(start = 10.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            painter = painterResource(R.mipmap.ic_launcher_round),
-            contentDescription = null,
-            modifier = Modifier.size(36.dp),
-        )
+        LumenAppIcon(size = 36.dp)
         Text(
             text = stringResource(R.string.widget_hint),
             style = MaterialTheme.typography.bodyLarge,

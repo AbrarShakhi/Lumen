@@ -32,6 +32,10 @@ interface AiBackend {
 
     val displayName: String
 
+    val vendorName: String
+
+    val keySourceName: String
+
     val keyUrl: String
 
     suspend fun answer(prompt: String, apiKey: String): AiAnswer

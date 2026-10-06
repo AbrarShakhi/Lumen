@@ -38,7 +38,10 @@ import com.abrarshakhi.lumen.app.navigation.navigateTo
 import com.abrarshakhi.lumen.app.navigation.popOrFalse
 import com.abrarshakhi.lumen.app.navigation.replaceWith
 import com.abrarshakhi.lumen.core.domain.preferences.UserPreferencesRepository
+import com.abrarshakhi.lumen.core.domain.document.ProjectDocument
 import com.abrarshakhi.lumen.core.ui.theme.LumenTheme
+import com.abrarshakhi.lumen.feature.about.AboutRoute
+import com.abrarshakhi.lumen.feature.about.DocumentRoute
 import com.abrarshakhi.lumen.feature.notes.NoteEditorRoute
 import com.abrarshakhi.lumen.feature.notes.NotesRoute
 import com.abrarshakhi.lumen.feature.search.SearchPresentation
@@ -118,6 +121,19 @@ fun AppRoot(
 
                     entry<AppRouteKey.Surfaces> {
                         SurfacesRoute(onBack = back, onNavigate = navigate)
+                    }
+
+                    entry<AppRouteKey.About> {
+                        AboutRoute(
+                            onBack = back,
+                            onOpenDocument = { document -> navigate(AppRouteKey.Document(document.name)) },
+                        )
+                    }
+
+                    entry<AppRouteKey.Document> { route ->
+                        val document = ProjectDocument.entries.firstOrNull { it.name == route.name }
+                            ?: ProjectDocument.About
+                        DocumentRoute(document = document, onBack = back)
                     }
 
                     entry<AppRouteKey.Notes> {

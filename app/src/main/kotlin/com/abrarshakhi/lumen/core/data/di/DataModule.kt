@@ -2,6 +2,8 @@ package com.abrarshakhi.lumen.core.data.di
 
 import com.abrarshakhi.lumen.core.data.db.AppIndexDao
 import com.abrarshakhi.lumen.core.data.db.LumenDatabase
+import com.abrarshakhi.lumen.core.data.document.AssetDocumentRepository
+import com.abrarshakhi.lumen.core.domain.document.DocumentRepository
 import com.abrarshakhi.lumen.core.data.db.UsageStatDao
 import com.abrarshakhi.lumen.core.data.preferences.DataStoreUserPreferencesRepository
 import com.abrarshakhi.lumen.core.data.network.HttpClientFactory
@@ -37,6 +39,8 @@ val dataModule = module {
     }
 
     single { HttpClientFactory.create() }
+
+    single<DocumentRepository> { AssetDocumentRepository(androidContext().assets) }
 
     single<SecretStore> {
         DataStoreSecretStore(

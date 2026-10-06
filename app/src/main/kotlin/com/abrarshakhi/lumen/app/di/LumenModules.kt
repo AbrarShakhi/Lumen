@@ -3,6 +3,7 @@ package com.abrarshakhi.lumen.app.di
 import com.abrarshakhi.lumen.core.data.di.dataModule
 import com.abrarshakhi.lumen.core.domain.di.domainModule
 import com.abrarshakhi.lumen.core.platform.di.platformModule
+import com.abrarshakhi.lumen.feature.about.di.aboutFeatureModule
 import com.abrarshakhi.lumen.feature.search.di.searchFeatureModule
 import com.abrarshakhi.lumen.feature.notes.di.notesFeatureModule
 import com.abrarshakhi.lumen.feature.settings.di.settingsFeatureModule
@@ -29,6 +30,7 @@ object LumenModules {
         searchFeatureModule,
         settingsFeatureModule,
         notesFeatureModule,
+        aboutFeatureModule,
         surfaceModule,
 
         mathProviderModule,

@@ -125,6 +125,19 @@ class SearchEngineTest {
     }
 
     @Test
+    fun `a provider that answers quickly settles without waiting for its timeout`() = runTest {
+        val quick = FakeProvider("quick", metadata(order = 10, timeoutMillis = 8_000)) {
+            listOf(result("q", "Quick"))
+        }
+
+        engine(quick).observe(MutableStateFlow("q")).test {
+            val settled = awaitSettled()
+            assertEquals(listOf("Quick"), settled.flatResults.map { it.title })
+            assertEquals(0L, testScheduler.currentTime, "the search settled only after the timeout elapsed")
+        }
+    }
+
+    @Test
     fun `one failing provider does not kill the others`() = runTest {
         val healthy = FakeProvider("ok", metadata(order = 10)) { listOf(result("o", "Healthy")) }
         val broken = FakeProvider(

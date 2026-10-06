@@ -18,6 +18,8 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField("String", "REPOSITORY_URL", "\"https://github.com/AbrarShakhi/Lumen\"")
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -50,6 +52,50 @@ android {
 
     sourceSets.getByName("androidTest") {
         assets.directories.add("$projectDir/schemas")
+    }
+}
+
+abstract class BundleDocumentsTask : DefaultTask() {
+
+    @get:InputFiles
+    @get:PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract val documents: ConfigurableFileCollection
+
+    @get:OutputDirectory
+    abstract val outputDirectory: DirectoryProperty
+
+    @TaskAction
+    fun bundle() {
+        val target = outputDirectory.get().dir("docs").asFile
+        target.deleteRecursively()
+        target.mkdirs()
+        documents.files.forEach { document ->
+            check(document.isFile) { "Missing project document: ${document.name}" }
+            document.copyTo(target.resolve(document.name), overwrite = true)
+        }
+    }
+}
+
+val bundleDocuments = tasks.register<BundleDocumentsTask>("bundleDocuments") {
+    group = "build"
+    description = "Copies the project's About, Credits, Terms, Privacy and License documents into app assets."
+    documents.from(
+        rootProject.layout.projectDirectory.files(
+            "ABOUT.md",
+            "CREDITS.md",
+            "TERMS.md",
+            "PRIVACY.md",
+            "LICENSE",
+        ),
+    )
+}
+
+androidComponents {
+    onVariants { variant ->
+        variant.sources.assets?.addGeneratedSourceDirectory(
+            bundleDocuments,
+            BundleDocumentsTask::outputDirectory,
+        )
     }
 }
 
