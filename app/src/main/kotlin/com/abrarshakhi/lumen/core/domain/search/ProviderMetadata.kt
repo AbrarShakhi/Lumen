@@ -9,6 +9,7 @@ import kotlin.time.Duration.Companion.milliseconds
 data class ProviderMetadata(
     val displayName: TextValue,
     val category: ResultCategory,
+    val icon: LumenIcon = LumenIcon.Search,
     val order: Int,
     val requiredPermissions: List<AppPermission> = emptyList(),
     val requiredCapabilities: List<PlatformCapability> = emptyList(),

@@ -9,11 +9,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.core.util.Consumer
 import com.abrarshakhi.lumen.app.LaunchActions
+import com.abrarshakhi.lumen.app.LaunchEvent
+import com.abrarshakhi.lumen.app.LaunchRequest
 import com.abrarshakhi.lumen.app.navigation.AppRouteKey
 import com.abrarshakhi.lumen.app.ui.AppRoot
 import com.abrarshakhi.lumen.feature.search.SearchPresentation
@@ -26,18 +30,28 @@ class QuickSearchActivity : ComponentActivity() {
 
         setContent {
             var query by remember { mutableStateOf(intent.prefilledQuery()) }
+            var serial by rememberSaveable { mutableIntStateOf(0) }
 
             DisposableEffect(Unit) {
-                val listener = Consumer<Intent> { newIntent -> query = newIntent.prefilledQuery() }
+                val listener = Consumer<Intent> { newIntent ->
+                    setIntent(newIntent)
+                    query = newIntent.prefilledQuery()
+                    serial += 1
+                }
                 addOnNewIntentListener(listener)
                 onDispose { removeOnNewIntentListener(listener) }
             }
 
             AppRoot(
-                startRoute = AppRouteKey.Search,
+                launch = LaunchEvent(
+                    request = LaunchRequest(
+                        route = AppRouteKey.Search,
+                        prefilledQuery = query,
+                        focusInput = true,
+                    ),
+                    serial = serial,
+                ),
                 onFinish = ::dismiss,
-                initialQuery = query,
-                autoFocus = true,
                 presentation = SearchPresentation.Panel,
             )
         }

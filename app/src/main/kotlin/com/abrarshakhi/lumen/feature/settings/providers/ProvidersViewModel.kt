@@ -61,6 +61,7 @@ class ProvidersViewModel(
             ProviderSetting(
                 id = provider.id,
                 name = provider.metadata.displayName,
+                icon = provider.metadata.icon,
                 enabled = stored[provider.id.value] ?: provider.metadata.defaultEnabled,
                 permission = provider.permissionState(),
             )

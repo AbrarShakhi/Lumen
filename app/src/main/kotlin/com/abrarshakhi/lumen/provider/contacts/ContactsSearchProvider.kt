@@ -36,6 +36,7 @@ class ContactsSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_contacts),
         category = ResultCategory.Contact,
+        icon = LumenIcon.Contact,
         order = 20,
         requiredPermissions = listOf(AppPermission.ReadContacts),
         timeout = 600.milliseconds,

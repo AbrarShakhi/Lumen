@@ -4,6 +4,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.automirrored.filled.Note
+import androidx.compose.material.icons.automirrored.filled.Shortcut
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.Calculate
 import androidx.compose.material.icons.filled.CalendarMonth
@@ -26,7 +27,6 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material.icons.filled.Shortcut
 import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -66,7 +66,7 @@ internal fun LumenIcon.toImageVector(): ImageVector = when (this) {
     LumenIcon.Uninstall -> Icons.Filled.Delete
     LumenIcon.Pin -> Icons.Filled.PushPin
     LumenIcon.Hide -> Icons.Filled.VisibilityOff
-    LumenIcon.Trigger -> Icons.Filled.Shortcut
+    LumenIcon.Trigger -> Icons.AutoMirrored.Filled.Shortcut
     LumenIcon.Permission -> Icons.Filled.Lock
     LumenIcon.Warning -> Icons.Filled.Warning
     LumenIcon.History -> Icons.Filled.History

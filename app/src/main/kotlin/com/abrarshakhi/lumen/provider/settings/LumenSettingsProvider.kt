@@ -30,6 +30,7 @@ class LumenSettingsProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_lumen),
         category = ResultCategory.Setting,
+        icon = LumenIcon.Settings,
         order = 61,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,

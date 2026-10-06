@@ -5,6 +5,7 @@ import com.abrarshakhi.lumen.feature.settings.ai.AiSettingsViewModel
 import com.abrarshakhi.lumen.feature.settings.files.FileFoldersViewModel
 import com.abrarshakhi.lumen.feature.settings.launcher.LauncherSettingsViewModel
 import com.abrarshakhi.lumen.feature.settings.providers.ProvidersViewModel
+import com.abrarshakhi.lumen.feature.settings.surfaces.SurfacesViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -14,4 +15,5 @@ val settingsFeatureModule = module {
     viewModelOf(::AiSettingsViewModel)
     viewModelOf(::FileFoldersViewModel)
     viewModelOf(::LauncherSettingsViewModel)
+    viewModelOf(::SurfacesViewModel)
 }

@@ -34,6 +34,7 @@ class AppsSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_apps),
         category = ResultCategory.App,
+        icon = LumenIcon.App,
         order = 10,
         optionalCapabilities = listOf(PlatformCapability.DefaultLauncher),
         timeout = 250.milliseconds,

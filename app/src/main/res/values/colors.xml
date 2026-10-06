@@ -2,4 +2,8 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="widget_preview_background">#FFFFF8F6</color>
+    <color name="widget_preview_container">#FFFFDAD3</color>
+    <color name="widget_preview_content">#FF3E0500</color>
+    <color name="widget_preview_muted">#FF5D3F3A</color>
 </resources>

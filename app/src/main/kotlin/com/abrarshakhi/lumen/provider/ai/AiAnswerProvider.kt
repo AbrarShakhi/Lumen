@@ -39,6 +39,7 @@ class AiAnswerProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_ai),
         category = ResultCategory.Answer,
+        icon = LumenIcon.Ai,
         order = 5,
         timeout = 40.seconds,
         debounce = Duration.ZERO,

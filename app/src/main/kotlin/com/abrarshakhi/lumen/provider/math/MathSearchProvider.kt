@@ -27,6 +27,7 @@ class MathSearchProvider : SnapshotSearchProvider() {
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_math),
         category = ResultCategory.Answer,
+        icon = LumenIcon.Calculator,
         order = 1,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,

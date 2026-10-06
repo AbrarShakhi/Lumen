@@ -1,18 +1,21 @@
 package com.abrarshakhi.lumen.feature.search
 
-import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalResources
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.abrarshakhi.lumen.app.navigation.AppRouteKey
-import com.abrarshakhi.lumen.core.domain.preferences.SearchBarPosition
 import com.abrarshakhi.lumen.core.domain.platform.IntentLauncher
+import com.abrarshakhi.lumen.core.domain.preferences.SearchBarPosition
 import com.abrarshakhi.lumen.core.ui.mvi.CollectEffects
 import com.abrarshakhi.lumen.core.ui.permission.rememberPermissionRequester
 import com.abrarshakhi.lumen.core.ui.text.resolve
@@ -25,7 +28,8 @@ fun SearchRoute(
     onCloseSurface: () -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
-    initialQuery: String? = null,
+    launchQuery: String? = null,
+    launchSerial: Int = 0,
     autoFocus: Boolean = true,
     barPosition: SearchBarPosition = SearchBarPosition.Bottom,
     presentation: SearchPresentation = SearchPresentation.Fullscreen,
@@ -33,8 +37,10 @@ fun SearchRoute(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val intentLauncher = koinInject<IntentLauncher>()
+    val resources = LocalResources.current
 
-    val textFieldState = remember { TextFieldState(initialText = initialQuery.orEmpty()) }
+    val textFieldState = rememberTextFieldState(initialText = launchQuery.orEmpty())
+    var appliedSerial by rememberSaveable { mutableIntStateOf(launchSerial) }
 
     val requestPermissions = rememberPermissionRequester()
 
@@ -43,13 +49,20 @@ fun SearchRoute(
             .collect { viewModel.dispatch(SearchIntent.QueryChanged(it)) }
     }
 
+    LaunchedEffect(launchSerial) {
+        if (launchSerial != appliedSerial) {
+            appliedSerial = launchSerial
+            launchQuery?.let(textFieldState::setTextAndPlaceCursorAtEnd)
+        }
+    }
+
     viewModel.effects.CollectEffects { effect ->
         when (effect) {
             is SearchEffect.Launch -> intentLauncher.launch(effect.intent)
             is SearchEffect.Navigate -> onNavigate(effect.route)
             is SearchEffect.SetQueryText -> textFieldState.setTextAndPlaceCursorAtEnd(effect.text)
             is SearchEffect.RequestPermissions -> requestPermissions(effect.permissions)
-            is SearchEffect.ShowMessage -> snackbarHostState.showSnackbar(effect.text.asString())
+            is SearchEffect.ShowMessage -> snackbarHostState.showSnackbar(effect.text.resolve(resources))
             SearchEffect.CloseSurface -> onCloseSurface()
         }
     }
@@ -63,11 +76,6 @@ fun SearchRoute(
         barPosition = barPosition,
         autoFocus = autoFocus,
         onDismiss = onCloseSurface,
-        onOpenSettings = { onNavigate(AppRouteKey.Settings) },
+        onNavigate = onNavigate,
     )
-}
-
-private fun com.abrarshakhi.lumen.core.domain.text.TextValue.asString(): String = when (this) {
-    is com.abrarshakhi.lumen.core.domain.text.TextValue.Raw -> value
-    is com.abrarshakhi.lumen.core.domain.text.TextValue.Res -> ""
 }

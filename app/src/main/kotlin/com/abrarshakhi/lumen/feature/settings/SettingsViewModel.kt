@@ -39,6 +39,15 @@ class SettingsViewModel(
 
             is SettingsIntent.SearchBarPositionSelected ->
                 update { it.copy(searchBarPosition = intent.position) }
+
+            is SettingsIntent.AccentSelected ->
+                update { it.copy(accent = intent.accent) }
+
+            is SettingsIntent.ColorStyleSelected ->
+                update { it.copy(colorStyle = intent.style) }
+
+            is SettingsIntent.PureBlackSet ->
+                update { it.copy(pureBlack = intent.enabled) }
         }
     }
 

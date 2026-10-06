@@ -31,6 +31,7 @@ class SystemSettingsProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_settings),
         category = ResultCategory.Setting,
+        icon = LumenIcon.Settings,
         order = 60,
         timeout = 200.milliseconds,
         debounce = Duration.ZERO,

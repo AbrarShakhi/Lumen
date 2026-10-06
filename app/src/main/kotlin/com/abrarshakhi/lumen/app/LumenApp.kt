@@ -5,6 +5,7 @@ import com.abrarshakhi.lumen.BuildConfig
 import com.abrarshakhi.lumen.app.di.LumenModules
 import com.abrarshakhi.lumen.core.data.di.ApplicationScopeQualifier
 import com.abrarshakhi.lumen.core.domain.search.SearchProviderRegistry
+import com.abrarshakhi.lumen.surface.widget.NotesWidgetUpdater
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.get
@@ -25,6 +26,7 @@ class LumenApp : Application() {
         }
 
         warmUpProviders()
+        get<NotesWidgetUpdater>().start(get<CoroutineScope>(ApplicationScopeQualifier))
     }
 
     private fun warmUpProviders() {

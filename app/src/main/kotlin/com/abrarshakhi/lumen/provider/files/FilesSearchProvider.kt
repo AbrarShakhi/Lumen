@@ -32,6 +32,7 @@ class FilesSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_files),
         category = ResultCategory.File,
+        icon = LumenIcon.File,
         order = 40,
         requiredPermissions = listOf(
             AppPermission.ReadExternalStorage,

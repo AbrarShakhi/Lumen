@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performTouchInput
 import androidx.test.platform.app.InstrumentationRegistry
 import com.abrarshakhi.lumen.R
+import com.abrarshakhi.lumen.app.navigation.AppRouteKey
 import com.abrarshakhi.lumen.core.domain.permission.AppPermission
 import com.abrarshakhi.lumen.core.domain.rank.ResultSection
 import com.abrarshakhi.lumen.core.domain.search.PermissionRequest
@@ -90,10 +91,32 @@ class SearchScreenTest {
     }
 
     @Test
-    fun fullscreen_showsIdleMessageWhenQueryIsBlank() {
+    fun fullscreen_showsHomeShortcutsWhenQueryIsBlank() {
         setScreen(SearchState(), SearchPresentation.Fullscreen)
 
-        compose.onNodeWithText(context.getString(R.string.search_idle_title)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.quick_notes)).assertIsDisplayed()
+        compose.onNodeWithText(context.getString(R.string.search_try)).assertIsDisplayed()
+    }
+
+    @Test
+    fun fullscreen_notesShortcutNavigatesToNotes() {
+        val routes = mutableListOf<AppRouteKey>()
+        compose.setContent {
+            LumenTheme {
+                SearchScreen(
+                    state = SearchState(),
+                    textFieldState = TextFieldState(),
+                    onIntent = {},
+                    presentation = SearchPresentation.Fullscreen,
+                    autoFocus = false,
+                    onNavigate = { routes += it },
+                )
+            }
+        }
+
+        compose.onNodeWithText(context.getString(R.string.quick_notes)).performClick()
+
+        assertEquals(listOf<AppRouteKey>(AppRouteKey.Notes), routes)
     }
 
     @Test

@@ -27,6 +27,7 @@ class UnitConversionProvider : SnapshotSearchProvider() {
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_units),
         category = ResultCategory.Answer,
+        icon = LumenIcon.Convert,
         order = 2,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,

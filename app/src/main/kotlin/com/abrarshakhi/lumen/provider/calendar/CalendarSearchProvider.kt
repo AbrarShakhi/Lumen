@@ -35,6 +35,7 @@ class CalendarSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_calendar),
         category = ResultCategory.CalendarEvent,
+        icon = LumenIcon.Calendar,
         order = 45,
         requiredPermissions = listOf(AppPermission.ReadCalendar),
         timeout = 2.seconds,

@@ -1,8 +1,10 @@
 package com.abrarshakhi.lumen.app
 
 import com.abrarshakhi.lumen.app.navigation.AppRouteKey
+import com.abrarshakhi.lumen.app.navigation.initialStack
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -56,4 +58,27 @@ class LaunchIntentParserTest {
     }
 
     private fun assertFalse(value: Boolean, message: String) = assertTrue(!value, message)
+
+    @Test
+    fun `widget shortcuts open their destinations on top of search`() {
+        assertEquals(AppRouteKey.Notes, parseLaunchIntent(action = LaunchActions.OPEN_NOTES).route)
+        assertEquals(AppRouteKey.NoteEditor(null), parseLaunchIntent(action = LaunchActions.NEW_NOTE).route)
+        assertEquals(AppRouteKey.Settings, parseLaunchIntent(action = LaunchActions.OPEN_SETTINGS).route)
+        assertFalse(parseLaunchIntent(action = LaunchActions.NEW_NOTE).focusInput)
+    }
+
+    @Test
+    fun `opening a note needs its id and falls back to the list without one`() {
+        assertEquals(
+            AppRouteKey.NoteEditor(42L),
+            parseLaunchIntent(action = LaunchActions.OPEN_NOTE, noteId = 42L).route,
+        )
+        assertEquals(AppRouteKey.Notes, parseLaunchIntent(action = LaunchActions.OPEN_NOTE).route)
+    }
+
+    @Test
+    fun `deep links keep search underneath so back returns to it`() {
+        assertEquals(listOf(AppRouteKey.Search), AppRouteKey.Search.initialStack())
+        assertEquals(listOf(AppRouteKey.Search, AppRouteKey.Notes), AppRouteKey.Notes.initialStack())
+    }
 }

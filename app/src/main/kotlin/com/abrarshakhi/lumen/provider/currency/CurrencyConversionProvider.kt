@@ -32,6 +32,7 @@ class CurrencyConversionProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_currency),
         category = ResultCategory.Answer,
+        icon = LumenIcon.Currency,
         order = 4,
         timeout = 8.seconds,
         debounce = 250.milliseconds,

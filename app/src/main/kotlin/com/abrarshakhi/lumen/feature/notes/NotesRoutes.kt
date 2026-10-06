@@ -21,6 +21,7 @@ fun NotesRoute(
         state = state,
         onBack = onBack,
         onOpenNote = onOpenNote,
+        onDeleteNote = { id -> viewModel.dispatch(NotesIntent.Deleted(id)) },
         modifier = modifier,
     )
 }

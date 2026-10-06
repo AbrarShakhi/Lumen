@@ -6,7 +6,7 @@ import androidx.navigation3.runtime.NavKey
 fun <T : NavKey> NavBackStack<T>.currentRoute(): T? = lastOrNull()
 
 fun <T : NavKey> NavBackStack<T>.navigateTo(route: T) {
-    add(route)
+    if (lastOrNull() != route) add(route)
 }
 
 fun <T : NavKey> NavBackStack<T>.switchTopTo(route: T) {
@@ -14,8 +14,16 @@ fun <T : NavKey> NavBackStack<T>.switchTopTo(route: T) {
     add(route)
 }
 
+fun <T : NavKey> NavBackStack<T>.replaceWith(routes: List<T>) {
+    clear()
+    addAll(routes)
+}
+
 fun <T : NavKey> NavBackStack<T>.popOrFalse(): Boolean {
     if (size <= 1) return false
     removeAt(lastIndex)
     return true
 }
+
+fun AppRouteKey.initialStack(): List<AppRouteKey> =
+    if (this == AppRouteKey.Search) listOf(AppRouteKey.Search) else listOf(AppRouteKey.Search, this)

@@ -1,124 +1,215 @@
 package com.abrarshakhi.lumen.feature.notes
 
-import androidx.compose.foundation.clickable
+import android.text.format.DateUtils
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.rememberLazyStaggeredGridState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.EditNote
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.abrarshakhi.lumen.R
 import com.abrarshakhi.lumen.core.domain.repository.Note
+import com.abrarshakhi.lumen.core.ui.component.EmptyState
+import com.abrarshakhi.lumen.core.ui.component.IconTone
+import com.abrarshakhi.lumen.core.ui.component.LumenScaffold
+import com.abrarshakhi.lumen.core.ui.component.contentColor
+import com.abrarshakhi.lumen.core.ui.component.containerColor
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesScreen(
     state: NotesState,
     onBack: () -> Unit,
     onOpenNote: (Long?) -> Unit,
+    onDeleteNote: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Scaffold(
-        modifier = modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.notes_title)) },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.settings_back),
-                        )
-                    }
-                },
-            )
+    val gridState = rememberLazyStaggeredGridState()
+    val expandedFab by remember { derivedStateOf { gridState.firstVisibleItemIndex == 0 } }
+    var pendingDelete by remember { mutableStateOf<Note?>(null) }
+
+    LumenScaffold(
+        title = stringResource(R.string.notes_title),
+        subtitle = if (state.isEmpty) {
+            null
+        } else {
+            pluralStringResource(R.plurals.notes_count, state.notes.size, state.notes.size)
         },
+        onBack = onBack,
+        modifier = modifier,
         floatingActionButton = {
-            FloatingActionButton(onClick = { onOpenNote(null) }) {
-                Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.notes_new))
-            }
+            ExtendedFloatingActionButton(
+                text = { Text(stringResource(R.string.notes_new)) },
+                icon = { Icon(Icons.Filled.EditNote, contentDescription = null) },
+                onClick = { onOpenNote(null) },
+                expanded = expandedFab,
+            )
         },
     ) { innerPadding ->
         if (state.isEmpty) {
-            EmptyNotes(Modifier.padding(innerPadding))
-            return@Scaffold
+            EmptyState(
+                title = stringResource(R.string.notes_empty),
+                subtitle = stringResource(R.string.notes_empty_hint),
+                modifier = Modifier.padding(innerPadding),
+            )
+            return@LumenScaffold
         }
 
-        LazyColumn(Modifier.padding(innerPadding).fillMaxSize()) {
-            items(state.notes, key = { it.id }) { note ->
-                NoteRow(note = note, onClick = { onOpenNote(note.id) })
+        LazyVerticalStaggeredGrid(
+            columns = StaggeredGridCells.Adaptive(NOTE_MIN_WIDTH),
+            state = gridState,
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 96.dp),
+            verticalItemSpacing = 10.dp,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            itemsIndexed(state.notes, key = { _, note -> note.id }) { index, note ->
+                NoteCard(
+                    note = note,
+                    tone = NOTE_TONES[index % NOTE_TONES.size],
+                    onClick = { onOpenNote(note.id) },
+                    onLongClick = { pendingDelete = note },
+                    modifier = Modifier.animateItem(),
+                )
             }
         }
     }
+
+    pendingDelete?.let { note ->
+        DeleteNoteDialog(
+            onConfirm = {
+                onDeleteNote(note.id)
+                pendingDelete = null
+            },
+            onDismiss = { pendingDelete = null },
+        )
+    }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun NoteRow(note: Note, onClick: () -> Unit) {
+private fun NoteCard(
+    note: Note,
+    tone: IconTone,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val content: Color = tone.contentColor()
+    val body = remember(note.title, note.body) { note.cardBody() }
+
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .clickable(role = Role.Button, onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 14.dp),
-        verticalArrangement = Arrangement.spacedBy(2.dp),
+            .clip(MaterialTheme.shapes.large)
+            .background(tone.containerColor())
+            .combinedClickable(
+                role = Role.Button,
+                onLongClickLabel = stringResource(R.string.notes_delete),
+                onClick = onClick,
+                onLongClick = onLongClick,
+            )
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
         Text(
             text = note.displayTitle.ifBlank { stringResource(R.string.notes_untitled) },
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
+            style = MaterialTheme.typography.titleMediumEmphasized,
+            color = content,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )
-        if (note.preview.isNotBlank()) {
+        if (body.isNotBlank()) {
             Text(
-                text = note.preview,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 2,
+                text = body,
+                style = MaterialTheme.typography.bodyMedium,
+                color = content,
+                maxLines = BODY_MAX_LINES,
                 overflow = TextOverflow.Ellipsis,
             )
         }
+        Text(
+            text = DateUtils.getRelativeTimeSpanString(
+                note.updatedAtMillis,
+                System.currentTimeMillis(),
+                DateUtils.MINUTE_IN_MILLIS,
+            ).toString(),
+            style = MaterialTheme.typography.labelSmall,
+            color = content.copy(alpha = MUTED_ALPHA),
+        )
     }
 }
 
 @Composable
-private fun EmptyNotes(modifier: Modifier) {
-    Column(
-        modifier = modifier.fillMaxSize().padding(32.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.notes_empty),
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center,
-        )
-        Text(
-            text = stringResource(R.string.notes_empty_hint),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(top = 6.dp),
-        )
-    }
+internal fun DeleteNoteDialog(onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        icon = { Icon(Icons.Filled.Delete, contentDescription = null) },
+        title = { Text(stringResource(R.string.notes_delete_title)) },
+        text = { Text(stringResource(R.string.notes_delete_body)) },
+        confirmButton = {
+            Button(
+                onClick = onConfirm,
+                shapes = ButtonDefaults.shapes(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError,
+                ),
+            ) {
+                Text(stringResource(R.string.action_delete))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, shapes = ButtonDefaults.shapes()) {
+                Text(stringResource(R.string.action_cancel))
+            }
+        },
+    )
 }
+
+private fun Note.cardBody(): String =
+    if (title.isNotBlank()) {
+        preview
+    } else {
+        body.lineSequence()
+            .dropWhile { it.isBlank() }
+            .drop(1)
+            .joinToString(" ")
+            .trim()
+    }
+
+private val NOTE_TONES = listOf(IconTone.Primary, IconTone.Secondary, IconTone.Tertiary, IconTone.Neutral)
+private val NOTE_MIN_WIDTH = 160.dp
+private const val BODY_MAX_LINES = 8
+private const val MUTED_ALPHA = 0.72f

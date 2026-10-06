@@ -4,14 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.abrarshakhi.lumen.app.navigation.AppRouteKey
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SettingsRoute(
     onBack: () -> Unit,
-    onOpenProviders: () -> Unit,
-    onOpenFileFolders: () -> Unit,
-    onOpenLauncherMode: () -> Unit,
+    onNavigate: (AppRouteKey) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
 ) {
@@ -21,9 +20,7 @@ fun SettingsRoute(
         state = state,
         onIntent = viewModel::dispatch,
         onBack = onBack,
-        onOpenProviders = onOpenProviders,
-        onOpenFileFolders = onOpenFileFolders,
-        onOpenLauncherMode = onOpenLauncherMode,
+        onNavigate = onNavigate,
         modifier = modifier,
     )
 }

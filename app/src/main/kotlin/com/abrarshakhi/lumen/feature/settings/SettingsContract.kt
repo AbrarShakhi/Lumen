@@ -1,7 +1,9 @@
 package com.abrarshakhi.lumen.feature.settings
 
 import androidx.compose.runtime.Immutable
+import com.abrarshakhi.lumen.core.domain.preferences.ColorStyle
 import com.abrarshakhi.lumen.core.domain.preferences.SearchBarPosition
+import com.abrarshakhi.lumen.core.domain.preferences.ThemeAccent
 import com.abrarshakhi.lumen.core.domain.preferences.ThemeMode
 import com.abrarshakhi.lumen.core.domain.preferences.UserPreferences
 import com.abrarshakhi.lumen.core.mvi.MviAction
@@ -14,6 +16,9 @@ sealed interface SettingsIntent : MviIntent {
     data class DynamicColorSet(val enabled: Boolean) : SettingsIntent
     data class FontScaleSet(val scale: Float) : SettingsIntent
     data class SearchBarPositionSelected(val position: SearchBarPosition) : SettingsIntent
+    data class AccentSelected(val accent: ThemeAccent) : SettingsIntent
+    data class ColorStyleSelected(val style: ColorStyle) : SettingsIntent
+    data class PureBlackSet(val enabled: Boolean) : SettingsIntent
 }
 
 sealed interface SettingsAction : MviAction {

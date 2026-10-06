@@ -33,6 +33,7 @@ class TimeSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_time),
         category = ResultCategory.Answer,
+        icon = LumenIcon.Clock,
         order = 3,
         timeout = 100.milliseconds,
         debounce = kotlin.time.Duration.ZERO,

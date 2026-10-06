@@ -2,6 +2,7 @@ package com.abrarshakhi.lumen.feature.settings.providers
 
 import androidx.compose.runtime.Immutable
 import com.abrarshakhi.lumen.core.domain.permission.AppPermission
+import com.abrarshakhi.lumen.core.domain.search.LumenIcon
 import com.abrarshakhi.lumen.core.domain.search.ProviderId
 import com.abrarshakhi.lumen.core.domain.text.TextValue
 import com.abrarshakhi.lumen.core.mvi.MviAction
@@ -29,6 +30,7 @@ data class ProvidersState(
 data class ProviderSetting(
     val id: ProviderId,
     val name: TextValue,
+    val icon: LumenIcon,
     val enabled: Boolean,
     val permission: ProviderPermissionState,
 )

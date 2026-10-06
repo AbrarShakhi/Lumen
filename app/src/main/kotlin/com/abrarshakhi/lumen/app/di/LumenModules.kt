@@ -18,6 +18,7 @@ import com.abrarshakhi.lumen.provider.settings.di.settingsProviderModule
 import com.abrarshakhi.lumen.provider.time.di.timeProviderModule
 import com.abrarshakhi.lumen.provider.units.di.unitsProviderModule
 import com.abrarshakhi.lumen.provider.web.di.webProviderModule
+import com.abrarshakhi.lumen.surface.di.surfaceModule
 import org.koin.core.module.Module
 
 object LumenModules {
@@ -28,6 +29,7 @@ object LumenModules {
         searchFeatureModule,
         settingsFeatureModule,
         notesFeatureModule,
+        surfaceModule,
 
         mathProviderModule,
         unitsProviderModule,

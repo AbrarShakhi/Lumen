@@ -7,6 +7,9 @@ data class UserPreferences(
     val dynamicColor: Boolean = true,
     val fontScale: Float = 1.0f,
     val searchBarPosition: SearchBarPosition = SearchBarPosition.Bottom,
+    val accent: ThemeAccent = ThemeAccent.Ember,
+    val colorStyle: ColorStyle = ColorStyle.TonalSpot,
+    val pureBlack: Boolean = false,
     val enabledProviders: Map<String, Boolean> = emptyMap(),
     val dismissedPermissionPrompts: Set<String> = emptySet(),
     val onboardingCompleted: Boolean = false,
@@ -21,6 +24,10 @@ data class UserPreferences(
 enum class ThemeMode { System, Light, Dark }
 
 enum class SearchBarPosition { Top, Bottom }
+
+enum class ThemeAccent { Ember, Amber, Moss, Ocean, Iris, Blossom }
+
+enum class ColorStyle { TonalSpot, Vibrant, Expressive, Neutral, Fidelity, Monochrome }
 
 interface UserPreferencesRepository {
     val preferences: StateFlow<UserPreferences>

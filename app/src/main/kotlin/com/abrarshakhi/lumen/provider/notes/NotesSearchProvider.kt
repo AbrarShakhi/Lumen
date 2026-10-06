@@ -29,6 +29,7 @@ class NotesSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_notes),
         category = ResultCategory.Note,
+        icon = LumenIcon.Note,
         order = 50,
         timeout = 400.milliseconds,
         debounce = 80.milliseconds,

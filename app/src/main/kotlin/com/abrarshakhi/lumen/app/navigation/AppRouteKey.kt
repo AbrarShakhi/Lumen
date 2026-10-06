@@ -34,6 +34,9 @@ sealed interface AppRouteKey : NavKey {
     data object FileFolders : AppRouteKey
 
     @Serializable
+    data object Surfaces : AppRouteKey
+
+    @Serializable
     data object Notes : AppRouteKey
 
     @Serializable

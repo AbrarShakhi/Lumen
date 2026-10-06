@@ -30,6 +30,7 @@ class WebSearchProvider(
     override val metadata = ProviderMetadata(
         displayName = TextValue.Res(R.string.provider_web),
         category = ResultCategory.WebSearch,
+        icon = LumenIcon.Web,
         order = 90,
         timeout = 100.milliseconds,
         debounce = Duration.ZERO,

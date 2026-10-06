@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.abrarshakhi.lumen.core.domain.search.IconSource
 
-val ResultIconSize: Dp = 42.dp
+val ResultIconSize: Dp = 44.dp
 
 @Composable
 fun ResultIcon(
@@ -46,14 +45,13 @@ fun ResultIcon(
     when (source) {
         is IconSource.App -> AppIcon(source, modifier, size)
 
-        is IconSource.Vector -> Box(modifier.size(size), contentAlignment = Alignment.Center) {
-            Icon(
-                imageVector = source.icon.toImageVector(),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(size * 0.55f),
-            )
-        }
+        is IconSource.Vector -> ShapedIcon(
+            icon = source.icon.toImageVector(),
+            modifier = modifier,
+            shape = LumenShape.Cookie,
+            tone = IconTone.Secondary,
+            size = size,
+        )
 
         is IconSource.Letter -> MonogramIcon(
             text = source.text,
